@@ -2,7 +2,7 @@ import os,stat,sys,zipfile,shutil
 from pathlib import Path
 archive,dest=sys.argv[1:]; base=Path(dest)
 dirs={'adapters','automation','contracts','converter','core','d14','dashboard','gateway','migration','protocol','scripts','test','universal','vector','verification','说明书'}
-roots={'.gitignore','AGENTS.md','README_先读.md','SHA256_MANIFEST.json','TEST_FEEDBACK.md','package.json','provider.example.json','一键导入.md','发行与更新.md','研发待办.md','首次导入指南.md','做梦与宿主接入.md','梦境同步接入_Beta10.md'}
+roots={'.gitignore','AGENTS.md','LICENSE.txt','README_先读.md','SHA256_MANIFEST.json','TEST_FEEDBACK.md','package.json','provider.example.json','一键导入.md','发行与更新.md','研发待办.md','首次导入指南.md','做梦与宿主接入.md','梦境同步接入_Beta10.md'}
 with zipfile.ZipFile(archive) as z:
  seen=set(); total=0
  if len(z.infolist())>10000: raise ValueError('too many entries')

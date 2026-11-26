@@ -1,5 +1,5 @@
 // Release metadata only. Never download, extract, execute, or write user data.
-export const LOCAL_RELEASE=Object.freeze({version:'0.1.0-beta.13',build:'RC6-J12-Beta13',channel:'beta'});
+export const LOCAL_RELEASE=Object.freeze({version:'0.1.0-beta.14',build:'RC6-J12-Beta14',channel:'beta'});
 function parseVersion(s){
  if(typeof s!=='string'||s.length>96)return null;
  const m=/^v?(0|[1-9]\d{0,8})\.(0|[1-9]\d{0,8})\.(0|[1-9]\d{0,8})(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/.exec(s);

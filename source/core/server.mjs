@@ -1,3 +1,6 @@
+import {runtimeEmbedding} from './historical-runtime-beta14e.mjs';
+import {historicalProposal} from './historical-proposal-beta14d.mjs';
+import {putHistoricalVectors,searchHistoricalVectors} from './historical-vector-beta14c.mjs';
 import {dreamReplay} from './dream-progression-beta13.mjs';
 import {inviteDream,dreamInvitationStatus,dreamRevision} from './dream-sync-beta10.mjs';
 import {dreamOpportunity,dreamImprovement} from './dream-host-beta09.mjs';
@@ -14,7 +17,7 @@ import {recordActivity,activityPage} from './activity-d14e4c.mjs';
 import {recordToolEvidence,readToolEvidence} from './tool-evidence-d14e4b.mjs';
 import {captureTool,toolStatus} from './tool-lifecycle-d14e4.mjs';
 import {capabilities as easyCapabilities,submitEasy,easyStatus} from './easy-write-d14e0.mjs';
-import {installSourceIndex,searchSources,expandSource} from './source-index-d14c2b.mjs';
+import {installSourceIndex,searchSources,expandSource,changeHistoricalGrants} from './source-index-d14c2b.mjs';
 import {startSourceIndex} from './source-index-worker-d14c2b.mjs';
 import {startIndexMaintenance} from './index-maintenance-d14c.mjs';
 import {notificationFeed,notificationEvents} from './notification-feed-d12.mjs';
@@ -39,18 +42,19 @@ const vitalsSecret=req=>/^[a-f0-9]{64}$/i.test(vitalsToken)&&![token,hostToken,p
 const boundScope=process.env.EVERLIGHT_BOUND_SCOPE||'';
 const coreDbPath=process.env.EVERLIGHT_CORE_DB||path.join(here,'..','private-data','core.sqlite');
 const rawScope=process.env.EVERLIGHT_D14C2B_RAW==='1'&&boundScope?boundScope:null;
-const core=new EverlightCore(coreDbPath,{retrievalProviders:await loadRetrievalProviders(),contextBudget:readContextBudget(process.env.EVERLIGHT_D14C2_CONTEXT_BYTES)||defaultContextBudgetBytes,rawRecallScope:process.env.EVERLIGHT_D14C3_AUTO_RAW==='1'?rawScope:null});
+const core=new EverlightCore(coreDbPath,{retrievalProviders:await loadRetrievalProviders(),contextBudget:readContextBudget(process.env.EVERLIGHT_D14C2_CONTEXT_BYTES)||defaultContextBudgetBytes,rawRecallScope:process.env.EVERLIGHT_D14C3_AUTO_RAW==='1'?rawScope:null,historicalFallback:process.env.EVERLIGHT_HISTORICAL_FALLBACK==='1'});
 if(rawScope){installSourceIndex(core.db,rawScope);startSourceIndex(coreDbPath,rawScope);}
 const connect=createConnectHandler(core.db,process.env,core);
 installLiveRevision(core.db);
 const remote=remoteRetrieval();
 const retrievalRemoteMode=remoteMode();
+const historicalRuntimeEmbedding=runtimeEmbedding();
 if(core.indexedRecall)startIndexMaintenance(coreDbPath);
 const respond=(res,code,body)=>{res.writeHead(code,{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff'});res.end(JSON.stringify(body))};
 const equal=(a,b)=>{const x=Buffer.from(a),y=Buffer.from(b);return x.length===y.length&&crypto.timingSafeEqual(x,y)};
 const actions={
  'GET /api/v8/ui/live-revision':(_,q)=>liveRevision(core.db,q.get('scope')),
- 'GET /api/v8/ui/mainline':(_,q)=>q.get('name')==='retrieval'?{scope:q.get('scope'),read_at:new Date().toISOString(),...retrievalInventory(core,{remoteConfigured:!!remote,mode:retrievalRemoteMode})}:panelMainline(core,q.get('scope'),q.get('name')),
+ 'GET /api/v8/ui/mainline':(_,q)=>q.get('name')==='retrieval'?{scope:q.get('scope'),read_at:new Date().toISOString(),...retrievalInventory(core,{remoteConfigured:!!remote,mode:retrievalRemoteMode}),historical_semantic_configured:!!historicalRuntimeEmbedding}:panelMainline(core,q.get('scope'),q.get('name')),
  'POST /api/v8/host/engine-event':b=>recordEngineEvent(core,b),
  'POST /api/v8/host/memory-observation':b=>recordHostMemory(core,b),
  'POST /api/v8/host/activity-event':b=>recordActivity(core,b),
@@ -102,10 +106,15 @@ const actions={
  'POST /api/v8/review/reminders':b=>core.reviewReminders(b),
  'POST /api/v8/commit/recover':b=>core.recoverCommits(b),
  'POST /api/v8/commit/scoped':b=>core.commitScoped(b),
+ 'POST /api/v8/import/historical-proposal':b=>{assertD9(b);return historicalProposal(core,b)},
+ 'POST /api/v8/import/historical-commit':b=>core.historicalCommit(b),
  'POST /api/v8/review':()=>{const e=new Error('Use scoped trusted review');e.status=410;throw e},
  'POST /api/v8/commit':()=>{const e=new Error('Use scoped trusted commit');e.status=410;throw e},
  'POST /api/v8/revoke':b=>core.revoke(b),
- 'POST /api/v8/recall':async b=>{if(typeof b.scope!=='string'||!b.scope.trim()||typeof b.query!=='string'||!b.query.trim())return core.recall(b);return recallWithPolicy(core,b,remote,retrievalRemoteMode);},
+ 'POST /api/v8/recall':async b=>{if(typeof b.scope!=='string'||!b.scope.trim()||typeof b.query!=='string'||!b.query.trim())return core.recall(b);return recallWithPolicy(core,b,remote,retrievalRemoteMode,historicalRuntimeEmbedding);},
+ 'POST /api/v8/s01/historical-vectors':b=>putHistoricalVectors(core.db,b,rawScope),
+ 'POST /api/v8/s01/historical-vector-search':b=>searchHistoricalVectors(core.db,b,rawScope),
+ 'POST /api/v8/s01/historical-grants':b=>changeHistoricalGrants(core.db,b,rawScope),
  'POST /api/v8/s01/search':b=>searchSources(core.db,b,rawScope),
  'POST /api/v8/s01/expand':b=>expandSource(core.db,b,rawScope),
  'POST /api/v8/recall/readback':b=>core.verifyActualRequest(b),
@@ -170,8 +179,9 @@ if(['GET /api/v8/host/affect-dynamics','POST /api/v8/host/cognitive-advice','POS
 // All stateful POST routes require a trusted host. Only pure validation/guidance are exempt.
 const purePostRoutes=new Set(['POST /api/v8/guidance','POST /api/v8/proposal/validate']);
 if(req.method==='POST' && !purePostRoutes.has(key) && (hostToken.length<24 || !equal(req.headers['x-everlight-host-token']||'',hostToken)))return respond(res,403,{error:'Trusted host credential required'});
-if(key==='POST /api/v8/governance'){const admin=process.env.EVERLIGHT_GOVERNANCE_ADMIN_TOKEN||'';if(admin.length<24||[token,hostToken,process.env.EVERLIGHT_AI_DECISION_TOKEN,process.env.EVERLIGHT_HUMAN_DECISION_TOKEN].includes(admin)||!equal(req.headers['x-everlight-governance-token']||'',admin))return respond(res,403,{error:'Governance administrator required'});}
-if(['POST /api/v8/joint/ai','POST /api/v8/joint/human','POST /api/v8/relations/name/review','POST /api/v8/relations/alias/review'].includes(key)){
+if(['POST /api/v8/governance','POST /api/v8/s01/historical-grants','POST /api/v8/s01/historical-vectors'].includes(key)){const admin=process.env.EVERLIGHT_GOVERNANCE_ADMIN_TOKEN||'';if(admin.length<24||[token,hostToken,process.env.EVERLIGHT_AI_DECISION_TOKEN,process.env.EVERLIGHT_HUMAN_DECISION_TOKEN].includes(admin)||!equal(req.headers['x-everlight-governance-token']||'',admin))return respond(res,403,{error:'Governance administrator required'});}
+if(['POST /api/v8/import/historical-commit','POST /api/v8/import/historical-proposal'].includes(key)&&(!boundScope||boundScope!=='personal'||!inviteProfile(process.env)||!d9Enabled()))return respond(res,403,{error:'Isolated public historical import only'});
+if(['POST /api/v8/import/historical-commit','POST /api/v8/import/historical-proposal','POST /api/v8/joint/ai','POST /api/v8/joint/human','POST /api/v8/relations/name/review','POST /api/v8/relations/alias/review'].includes(key)){
 const ai=process.env.EVERLIGHT_AI_DECISION_TOKEN||'',human=process.env.EVERLIGHT_HUMAN_DECISION_TOKEN||'';const expected=key.endsWith('/ai')?ai:human;
 if(ai.length<24||human.length<24||new Set([ai,human,token,hostToken]).size!==4||!equal(req.headers['x-everlight-decision-token']||'',expected))return respond(res,403,{error:'Independent decision credential required'});
 }if(!fn)return respond(res,404,{error:'Not found'});let b={};if(req.method==='POST'){if(!(req.headers['content-type']||'').startsWith('application/json'))return respond(res,415,{error:'JSON required'});let chunks=[],n=0;for await(const chunk of req){n+=chunk.length;if(n>1024*1024)return respond(res,413,{error:'Too large'});chunks.push(chunk)}b=JSON.parse(Buffer.concat(chunks).toString('utf8')||'{}');if(boundScope && (!b || typeof b!=='object' || Array.isArray(b)))return respond(res,403,{error:'Scoped JSON object required'});

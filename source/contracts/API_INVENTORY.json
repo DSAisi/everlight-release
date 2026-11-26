@@ -842,6 +842,46 @@
       "actor": "trusted_host",
       "effect": "Compare persisted same-query before/after recall selections for committed revision; not behavioral learning.",
       "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/import/historical-commit",
+      "domain": "historical_import",
+      "actor": "authorized_host",
+      "effect": "New historical machine admission, not semantic approval",
+      "auth": "core bearer + host + human decision credential; invite profile, strict D9, personal scope"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/s01/historical-grants",
+      "domain": "source_index",
+      "actor": "trusted_governance_host",
+      "effect": "Grant/revoke exact historical source hash for derived index; no canonical write.",
+      "auth": "core bearer + host + governance token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/s01/historical-vectors",
+      "domain": "source_index",
+      "actor": "trusted_host",
+      "effect": "Attach dense vectors to live granted immutable historical sources.",
+      "auth": "core bearer + host + governance token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/s01/historical-vector-search",
+      "domain": "source_index",
+      "actor": "trusted_host",
+      "effect": "Read ranked historical candidates, no automatic injection.",
+      "auth": "core bearer + host"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/import/historical-proposal",
+      "domain": "historical_import",
+      "actor": "authorized_host",
+      "effect": "Reuse exact historical proposal with identical immutable evidence; no semantic merge or canonical write.",
+      "auth": "core bearer + host + human decision credential; invite profile, strict D9, personal scope"
     }
   ],
   "dashboard_route_literals": {

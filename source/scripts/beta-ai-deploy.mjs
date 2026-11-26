@@ -8,7 +8,7 @@ import {once} from 'node:events';
 import {setTimeout as sleep} from 'node:timers/promises';
 process.umask(0o077);
 const root=path.resolve(import.meta.dirname,'..'),dir=path.join(root,'trial-beta'),lock=path.join(root,'.ai-deploy.lock');
-const args=process.argv.slice(2), flags=new Set(['--apply','--raw-only','--allow-model','--confirm-history','--input','--provider','--config']);
+const args=process.argv.slice(2), flags=new Set(['--apply','--raw-only','--allow-model','--local-notes','--structured-notes','--allow-embedding','--vector-classify','--strict-review','--confirm-history','--input','--provider','--config']);
 const opts={};let stack,active,fd,interrupted=false,stage='validate';
 function emit(x){console.log(JSON.stringify({...x,production_approved:false}));}
 function fail(msg){throw Error(msg);}
@@ -25,7 +25,8 @@ async function selectPorts(exclude=[]){const used=new Set(exclude);const chosen=
 async function probe(url,key){try{const r=await fetch(url,{headers:{authorization:'Bearer '+key},signal:AbortSignal.timeout(1000)});await r.arrayBuffer();return r.ok;}catch{return false;}}
 try{
  for(let i=0;i<args.length;i++){const k=args[i];if(!flags.has(k)||k in opts)fail('Unknown or duplicate flag');if(['--input','--provider','--config'].includes(k)){if(!args[i+1]||args[i+1].startsWith('--'))fail('Missing path');opts[k]=path.resolve(args[++i]);}else opts[k]=true;}
- if(!opts['--input']||Boolean(opts['--raw-only'])===Boolean(opts['--allow-model']))fail('Choose --input and exactly one of --raw-only / --allow-model');
+ if(!opts['--input']||['--raw-only','--allow-model','--local-notes'].filter(k=>opts[k]).length!==1)fail('Choose --input and exactly one of --raw-only / --local-notes / --allow-model');
+ if(opts['--local-notes']&&['--provider','--strict-review'].some(k=>opts[k]))fail('Local notes cannot use a chat provider or strict model review');
  if(opts['--raw-only']&&(opts['--provider']||opts['--config']))fail('Raw-only cannot configure external processing');
  if(Number(process.versions.node.split('.')[0])<22)fail('Node.js >=22 required; agent may install from official source after authorization');
  const input=await regular(opts['--input']);if(input.startsWith(dir+path.sep)||input===dir)fail('History must be external to trial data');
@@ -36,11 +37,11 @@ try{
  if(configured)await regular(path.join(dir,'gateway.local.json'),true);
  const profile=provider|| (configured?path.join(dir,'gateway.local.json'):null);const profileData=profile?JSON.parse(await fs.readFile(profile,'utf8')):null;
  if(profileData?.automation)fail('Existing or supplied live classification automation is outside historical import authorization');
- if(opts['--raw-only']&&configured)fail('Raw-only requires a trial without a configured gateway; no existing settings are changed');
+ if((opts['--raw-only']||opts['--local-notes'])&&configured)fail('Raw-only requires a trial without a configured gateway; no existing settings are changed');
  if(provider&&(!Number.isInteger(profileData?.port)||profileData.port<1024||profileData.port>65535))fail('Invalid provider port');
  if(opts['--allow-model']&&!provider&&!configured&&!config)fail('Provide an authorized private provider file or existing provider configuration');
  if(provider&&configured)fail('Existing provider configuration will not be overwritten; omit --provider to reuse');
- emit({stage:'plan',mode:opts['--raw-only']?'raw_only':'semantic',existing_trial:existing,provider_configured:!!(provider||configured),network_processing:!!opts['--allow-model'],requires_batch_authorization:true,estimated_budget_not_hard_cap:true});
+ emit({stage:'plan',mode:opts['--raw-only']?'raw_only':opts['--local-notes']?'local_notes':'semantic',existing_trial:existing,provider_configured:!!(provider||configured),network_processing:!!(opts['--allow-model']||opts['--allow-embedding']),requires_batch_authorization:true,estimated_budget_not_hard_cap:true});
  if(opts['--apply']){
   if(!opts['--confirm-history'])fail('One explicit batch authorization required');
   fd=await fs.open(lock,'wx',0o600);
@@ -51,7 +52,7 @@ try{
   stage='start';stack=child('w3-handoff.mjs',['start','trial-beta']);stack.stdout.resume();stack.stderr.resume();stack.on('error',()=>{interrupted=true;});
   let ready=false;for(let i=0;i<160&&!interrupted&&stack.exitCode===null;i++){ready=await probe(e.EVERLIGHT_CORE_URL+'/api/v8/write/contracts',e.EVERLIGHT_CORE_TOKEN)&&await probe(`http://127.0.0.1:${e.PORT}/`,e.EVERLIGHT_UI_TOKEN);if(ready)break;await sleep(150);}
   if(!ready)fail('Core/panel readiness failed');emit({stage:'services_ready',panel_url:`http://127.0.0.1:${e.PORT}/`});
-  stage='import';await run('beta-easy-import.mjs',[input,'--confirm-history',opts['--raw-only']?'--raw-only':'--allow-model',...(config?['--config',config]:[])],{progress:true});
+  stage='import';await run('beta-easy-import.mjs',[input,'--confirm-history',opts['--raw-only']?'--raw-only':opts['--local-notes']?'--local-notes':'--allow-model',...['--structured-notes','--allow-embedding','--vector-classify','--strict-review'].filter(k=>opts[k]),...(config?['--config',config]:[])],{progress:true});
   stage='verify';if(!await probe(e.EVERLIGHT_CORE_URL+'/api/v8/write/contracts',e.EVERLIGHT_CORE_TOKEN))fail('Post-import core verification failed');
   emit({stage:'import_finished',service_lifecycle:'stopped_on_exit',start_command:'npm run beta:start',login_command:'npm run beta:login',reports:'trial-beta/imports/*/bootstrap-report.json',full_semantic_accuracy_verified:false});
  }

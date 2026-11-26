@@ -1,0 +1,210 @@
+
+> everlight-lampkin-mobile-gateway@7.0.0 test
+> node --test test/*.test.mjs
+
+TAP version 13
+# Subtest: 完整接口 + 原 12 库核心独立进程连通
+ok 1 - 完整接口 + 原 12 库核心独立进程连通
+  ---
+  duration_ms: 1970.098021
+  type: 'test'
+  ...
+# Subtest: audit links require explicit canonical slot and memory id
+ok 2 - audit links require explicit canonical slot and memory id
+  ---
+  duration_ms: 0.970098
+  type: 'test'
+  ...
+# Subtest: audit detail still distinguishes request verification from planned recall
+ok 3 - audit detail still distinguishes request verification from planned recall
+  ---
+  duration_ms: 0.213701
+  type: 'test'
+  ...
+# Subtest: v6 自动链路：读完入图/去重/证据撤回；夜契提醒/频道授权/加密入库/撤回
+ok 4 - v6 自动链路：读完入图/去重/证据撤回；夜契提醒/频道授权/加密入库/撤回
+  ---
+  duration_ms: 3313.24352
+  type: 'test'
+  ...
+# Subtest: Beta08 internal pages are not registered, notification and settings retained
+ok 5 - Beta08 internal pages are not registered, notification and settings retained
+  ---
+  duration_ms: 0.719371
+  type: 'test'
+  ...
+# (node:95129) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: import panel shows only progress counts and budget aggregates; no raw contents or secret paths
+ok 6 - import panel shows only progress counts and budget aggregates; no raw contents or secret paths
+  ---
+  duration_ms: 16.56968
+  type: 'test'
+  ...
+# Subtest: non-personal instance cannot access legacy local stores
+ok 7 - non-personal instance cannot access legacy local stores
+  ---
+  duration_ms: 840.037281
+  type: 'test'
+  ...
+# Subtest: H6F live policy covers memory, task, review, notice and cognition without private or edit pages
+ok 8 - H6F live policy covers memory, task, review, notice and cognition without private or edit pages
+  ---
+  duration_ms: 1.57782
+  type: 'test'
+  ...
+# Subtest: H6F refresh suppresses timestamp-only changes and protects draft, focus and active dialogs
+ok 9 - H6F refresh suppresses timestamp-only changes and protects draft, focus and active dialogs
+  ---
+  duration_ms: 0.942095
+  type: 'test'
+  ...
+# Subtest: 图库自动归档权限、真实来源、文件保存、修订与撤回 + 夜契加密档案
+ok 10 - 图库自动归档权限、真实来源、文件保存、修订与撤回 + 夜契加密档案
+  ---
+  duration_ms: 883.479118
+  type: 'test'
+  ...
+# Subtest: person memory endpoint uses authenticated loopback v8 adapter
+ok 11 - person memory endpoint uses authenticated loopback v8 adapter
+  ---
+  duration_ms: 5.111428
+  type: 'test'
+  ...
+# Subtest: 照片墙元数据、相册、搜索、分页、收藏与版本冲突
+ok 12 - 照片墙元数据、相册、搜索、分页、收藏与版本冲突
+  ---
+  duration_ms: 574.572584
+  type: 'test'
+  ...
+# Subtest: 照片馆渲染前端：/ 影像墙 / 相册分类 / 真实来源说明 / 编辑表单
+ok 13 - 照片馆渲染前端：/ 影像墙 / 相册分类 / 真实来源说明 / 编辑表单
+  ---
+  duration_ms: 39.871433
+  type: 'test'
+  ...
+# Subtest: 照片馆渲染前端：/everlight3 影像墙 / 相册分类 / 真实来源说明 / 编辑表单
+ok 14 - 照片馆渲染前端：/everlight3 影像墙 / 相册分类 / 真实来源说明 / 编辑表单
+  ---
+  duration_ms: 1.871001
+  type: 'test'
+  ...
+# Subtest: detail retains existing API and displays actual payload fields
+ok 15 - detail retains existing API and displays actual payload fields
+  ---
+  duration_ms: 1.106823
+  type: 'test'
+  ...
+# Subtest: source list is read-only and does not claim verification
+ok 16 - source list is read-only and does not claim verification
+  ---
+  duration_ms: 0.398559
+  type: 'test'
+  ...
+# Subtest: graph uses real API and search is local
+ok 17 - graph uses real API and search is local
+  ---
+  duration_ms: 4.763483
+  type: 'test'
+  ...
+# Subtest: memory preview distinguishes missing backend
+ok 18 - memory preview distinguishes missing backend
+  ---
+  duration_ms: 0.210665
+  type: 'test'
+  ...
+# Subtest: detail uses existing real endpoint and read-only source completeness
+ok 19 - detail uses existing real endpoint and read-only source completeness
+  ---
+  duration_ms: 2.05654
+  type: 'test'
+  ...
+# Subtest: missing source and time are visible, not fabricated
+ok 20 - missing source and time are visible, not fabricated
+  ---
+  duration_ms: 0.725373
+  type: 'test'
+  ...
+# Subtest: existing library pagination and module routes preserved
+ok 21 - existing library pagination and module routes preserved
+  ---
+  duration_ms: 0.378755
+  type: 'test'
+  ...
+# Subtest: version precedence including beta.10 and stable; malformed versions rejected
+ok 22 - version precedence including beta.10 and stable; malformed versions rejected
+  ---
+  duration_ms: 4.02493
+  type: 'test'
+  ...
+# Subtest: configured beta checks fixed GitHub URL, no credentials, no install; filters draft and malformed releases
+ok 23 - configured beta checks fixed GitHub URL, no credentials, no install; filters draft and malformed releases
+  ---
+  duration_ms: 30.294385
+  type: 'test'
+  ...
+# Subtest: stable channel filters prereleases and network error cannot claim latest
+ok 24 - stable channel filters prereleases and network error cannot claim latest
+  ---
+  duration_ms: 0.876799
+  type: 'test'
+  ...
+# Subtest: unconfigured and invalid repo do not call network, incomplete page fails closed
+ok 25 - unconfigured and invalid repo do not call network, incomplete page fails closed
+  ---
+  duration_ms: 1.235946
+  type: 'test'
+  ...
+# Subtest: real dashboard HTTP: protected routes, offline default, no installation endpoint, nonpersonal status allowed
+ok 26 - real dashboard HTTP: protected routes, offline default, no installation endpoint, nonpersonal status allowed
+  ---
+  duration_ms: 484.598714
+  type: 'test'
+  ...
+# Subtest: real HTTP authorization sends durable reminder to core; host and UI credentials separated
+ok 27 - real HTTP authorization sends durable reminder to core; host and UI credentials separated
+  ---
+  duration_ms: 771.2107
+  type: 'test'
+  ...
+# (node:95707) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: authorization durable, retry idempotent, no unverified backup or unsigned install, target version gate
+ok 28 - authorization durable, retry idempotent, no unverified backup or unsigned install, target version gate
+  ---
+  duration_ms: 88.298302
+  type: 'test'
+  ...
+# Subtest: disabled authorization refuses requests
+ok 29 - disabled authorization refuses requests
+  ---
+  duration_ms: 8.770597
+  type: 'test'
+  ...
+# Subtest: v8 adapter is opt-in and never forwards browser credentials
+ok 30 - v8 adapter is opt-in and never forwards browser credentials
+  ---
+  duration_ms: 2.16946
+  type: 'test'
+  ...
+# Subtest: v8 library navigation uses actual cursor instead of fake total
+ok 31 - v8 library navigation uses actual cursor instead of fake total
+  ---
+  duration_ms: 0.242602
+  type: 'test'
+  ...
+# Subtest: v8 dashboard status uses core status, not fabricated totals
+ok 32 - v8 dashboard status uses core status, not fabricated totals
+  ---
+  duration_ms: 6.054722
+  type: 'test'
+  ...
+1..32
+# tests 32
+# suites 0
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4599.485261

@@ -1,0 +1,28 @@
+
+> everlight-v8-isolated@9.0.0-beta.14 beta:verify
+> node scripts/w3-handoff.mjs verify
+
+(node:91088) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+Beta08 public edition: no D14 service, blocked legacy module/host routes and runtime settings
+H6C HTTP verified: bound question and answer -> revised due date -> panel history -> old recall rejected
+H6B HTTP verified: live capture -> scoped continuity -> UI -> relevant recall -> end and stale readback rejection -> switch off
+H6F HTTP verified: stable idle revision, committed source changes revision, unified endpoint authorization and asset
+H5 unified HTTP: panel task/review/reminder + Connect inbox on one endpoint; credential separation, scope and allowlist checked
+H4 HTTP checks passed: real notification readback, disabled states, scope and login, static assets
+{
+  "result": "PASS",
+  "checks": [
+    "fresh stack core + panel",
+    "D9 12 kinds",
+    "strict reject legacy payload",
+    "valid proposal",
+    "commit denied before independent approvals",
+    "commit readback",
+    "Connect event and credential isolation",
+    "quality truthful coverage flag",
+    "panel HTTP reminder + task + human review + reporting -> single Connect inbox"
+  ],
+  "production_approved": false,
+  "real_host_verified": false
+}

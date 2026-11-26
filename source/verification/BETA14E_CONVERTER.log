@@ -1,0 +1,334 @@
+
+> everlight-12-slot-batch-100k@1.1.0-rc.26 test
+> node --test test/*.test.mjs
+
+TAP version 13
+# Subtest: preserve repeated messages and flag conflicting IDs
+ok 1 - preserve repeated messages and flag conflicting IDs
+  ---
+  duration_ms: 24.13098
+  type: 'test'
+  ...
+# Subtest: task history never infers current state from message chronology
+ok 2 - task history never infers current state from message chronology
+  ---
+  duration_ms: 2.092642
+  type: 'test'
+  ...
+# Subtest: cross-window name matches remain unverified and preserve candidates
+ok 3 - cross-window name matches remain unverified and preserve candidates
+  ---
+  duration_ms: 7.682787
+  type: 'test'
+  ...
+# (node:97969) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: one-command full historical import with synthetic provider, machine admission, defer and replay
+ok 4 - one-command full historical import with synthetic provider, machine admission, defer and replay
+  ---
+  duration_ms: 1976.534227
+  type: 'test'
+  ...
+# (node:97984) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: prototype ranking returns multiple labels, no ledger or approval
+ok 5 - prototype ranking returns multiple labels, no ledger or approval
+  ---
+  duration_ms: 18.833814
+  type: 'test'
+  ...
+# Subtest: classification vectors require separate authorization and dense provider
+ok 6 - classification vectors require separate authorization and dense provider
+  ---
+  duration_ms: 1.978782
+  type: 'test'
+  ...
+# Subtest: offline prototype and raw text vectors actually feed classification hints
+ok 7 - offline prototype and raw text vectors actually feed classification hints
+  ---
+  duration_ms: 14.105873
+  type: 'test'
+  ...
+# (node:98041) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: explicit note validation rejects system slots, private content, bad dates and kind mismatches
+ok 8 - explicit note validation rejects system slots, private content, bad dates and kind mismatches
+  ---
+  duration_ms: 4.262582
+  type: 'test'
+  ...
+# Subtest: local notes and mixed import: actual HTTP, direct note commit, no model calls for explicit notes, raw preservation and replay
+ok 9 - local notes and mixed import: actual HTTP, direct note commit, no model calls for explicit notes, raw preservation and replay
+  ---
+  duration_ms: 2343.213593
+  type: 'test'
+  ...
+# Subtest: vector-only classifies hints without inventing facts, excludes marked private data
+ok 10 - vector-only classifies hints without inventing facts, excludes marked private data
+  ---
+  duration_ms: 73.988615
+  type: 'test'
+  ...
+# (node:98059) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: identical text shares embedding across batches, model revisions stay separate and budget counts only misses
+ok 11 - identical text shares embedding across batches, model revisions stay separate and budget counts only misses
+  ---
+  duration_ms: 150.649777
+  type: 'test'
+  ...
+# (node:98206) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: authorized raw import builds dense index through real HTTP, same history in reordered file reuses source and cached embeddings
+ok 12 - authorized raw import builds dense index through real HTTP, same history in reordered file reuses source and cached embeddings
+  ---
+  duration_ms: 1781.088939
+  type: 'test'
+  ...
+# (node:98426) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: persistent cross-workspace budget, unknown reservations, usage settlement and overrun
+ok 13 - persistent cross-workspace budget, unknown reservations, usage settlement and overrun
+  ---
+  duration_ms: 149.212144
+  type: 'test'
+  ...
+# Subtest: zero-network preview excludes tagged private primary and counts model work
+ok 14 - zero-network preview excludes tagged private primary and counts model work
+  ---
+  duration_ms: 116.004008
+  type: 'test'
+  ...
+# Subtest: actual provider requests blocked before paid call; tagged context never sent; embedding shares same cap
+ok 15 - actual provider requests blocked before paid call; tagged context never sent; embedding shares same cap
+  ---
+  duration_ms: 118.369215
+  type: 'test'
+  ...
+# (node:98493) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: multi-label metrics and absent predictions
+ok 16 - multi-label metrics and absent predictions
+  ---
+  duration_ms: 4.234719
+  type: 'test'
+  ...
+# Subtest: paid evaluation requires consent and budget; no labels or withheld rows sent, usage settled
+ok 17 - paid evaluation requires consent and budget; no labels or withheld rows sent, usage settled
+  ---
+  duration_ms: 87.834649
+  type: 'test'
+  ...
+# Subtest: reservation survives restart and unknown usage remains charged
+ok 18 - reservation survives restart and unknown usage remains charged
+  ---
+  duration_ms: 5.589053
+  type: 'test'
+  ...
+# (node:98561) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: prepare streams and chunks without crossing 100k contract
+ok 19 - prepare streams and chunks without crossing 100k contract
+  ---
+  duration_ms: 116.475465
+  type: 'test'
+  ...
+# Subtest: calibration gate blocks full run and permits it after review
+ok 20 - calibration gate blocks full run and permits it after review
+  ---
+  duration_ms: 244.860062
+  type: 'test'
+  ...
+# Subtest: top-level JSON array parser is streaming-compatible
+ok 21 - top-level JSON array parser is streaming-compatible
+  ---
+  duration_ms: 19.617692
+  type: 'test'
+  ...
+# Subtest: the 100,000 ceiling cannot be configured away
+ok 22 - the 100,000 ceiling cannot be configured away
+  ---
+  duration_ms: 7.73019
+  type: 'test'
+  ...
+# Subtest: RC6 kind and evidence validation
+ok 23 - RC6 kind and evidence validation
+  ---
+  duration_ms: 0.917659
+  type: 'test'
+  ...
+# Subtest: zero overlap never leaks previous chunk
+ok 24 - zero overlap never leaks previous chunk
+  ---
+  duration_ms: 74.383077
+  type: 'test'
+  ...
+# Subtest: changed model configuration invalidates resume
+ok 25 - changed model configuration invalidates resume
+  ---
+  duration_ms: 58.033013
+  type: 'test'
+  ...
+# Subtest: reject malformed JSON arrays
+ok 26 - reject malformed JSON arrays
+  ---
+  duration_ms: 8.939475
+  type: 'test'
+  ...
+# Subtest: calibration approval binds actual result bytes
+ok 27 - calibration approval binds actual result bytes
+  ---
+  duration_ms: 53.686049
+  type: 'test'
+  ...
+# Subtest: merge rejects missing plan chunks
+ok 28 - merge rejects missing plan chunks
+  ---
+  duration_ms: 41.749298
+  type: 'test'
+  ...
+# Subtest: CSV preserves Unicode, multiline, commas and escaped quotes across byte boundaries
+ok 29 - CSV preserves Unicode, multiline, commas and escaped quotes across byte boundaries
+  ---
+  duration_ms: 21.713439
+  type: 'test'
+  ...
+# Subtest: CSV rejects malformed rows and duplicate headers
+ok 30 - CSV rejects malformed rows and duplicate headers
+  ---
+  duration_ms: 6.925311
+  type: 'test'
+  ...
+# (node:98604) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: embedding opt-in, indexed response, cache and evidence
+ok 31 - embedding opt-in, indexed response, cache and evidence
+  ---
+  duration_ms: 144.216558
+  type: 'test'
+  ...
+# Subtest: fusion prioritizes agreement despite incompatible score scales and preserves evidence
+ok 32 - fusion prioritizes agreement despite incompatible score scales and preserves evidence
+  ---
+  duration_ms: 6.148584
+  type: 'test'
+  ...
+# Subtest: fusion supports lexical-only and empty inputs, deduplicates reversed pairs
+ok 33 - fusion supports lexical-only and empty inputs, deduplicates reversed pairs
+  ---
+  duration_ms: 0.307612
+  type: 'test'
+  ...
+# (node:98700) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: historical auto admission does not promote unresolved current state
+ok 34 - historical auto admission does not promote unresolved current state
+  ---
+  duration_ms: 1.019071
+  type: 'test'
+  ...
+# Subtest: later report does not establish current or effective state
+ok 35 - later report does not establish current or effective state
+  ---
+  duration_ms: 0.947823
+  type: 'test'
+  ...
+# Subtest: one-sided evidence cannot establish a change
+ok 36 - one-sided evidence cannot establish a change
+  ---
+  duration_ms: 0.256476
+  type: 'test'
+  ...
+# Subtest: connected changes retain explicit edges without inferring transitive identity or chronology
+ok 37 - connected changes retain explicit edges without inferring transitive identity or chronology
+  ---
+  duration_ms: 1.437329
+  type: 'test'
+  ...
+# Subtest: unsupported and conflict edges do not connect groups
+ok 38 - unsupported and conflict edges do not connect groups
+  ---
+  duration_ms: 9.156601
+  type: 'test'
+  ...
+# Subtest: explicit order does not assert current state
+ok 39 - explicit order does not assert current state
+  ---
+  duration_ms: 0.930147
+  type: 'test'
+  ...
+# Subtest: reject duplicate, unconfirmed and unsupported adjacency
+ok 40 - reject duplicate, unconfirmed and unsupported adjacency
+  ---
+  duration_ms: 0.749926
+  type: 'test'
+  ...
+# Subtest: local import preserves bytes, rejects oversize and existing plan
+ok 41 - local import preserves bytes, rejects oversize and existing plan
+  ---
+  duration_ms: 34.481294
+  type: 'test'
+  ...
+# (node:98756) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: judgment rejects invented evidence and invalid relation
+ok 42 - judgment rejects invented evidence and invalid relation
+  ---
+  duration_ms: 1.196256
+  type: 'test'
+  ...
+# Subtest: judgment disabled by default and requires authorization
+ok 43 - judgment disabled by default and requires authorization
+  ---
+  duration_ms: 0.887032
+  type: 'test'
+  ...
+# (node:98784) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: offline vectors require exact content hash, model and revision, no external authorization
+ok 44 - offline vectors require exact content hash, model and revision, no external authorization
+  ---
+  duration_ms: 28.948725
+  type: 'test'
+  ...
+# (node:98786) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: review evidence, stale generation, invalid decision and tamper rejection
+ok 45 - review evidence, stale generation, invalid decision and tamper rejection
+  ---
+  duration_ms: 35.860134
+  type: 'test'
+  ...
+# Subtest: history page and persisted confirmation
+ok 46 - history page and persisted confirmation
+  ---
+  duration_ms: 21.534269
+  type: 'test'
+  ...
+# Subtest: related Chinese task descriptions yield evidence-linked hints, never confirmed identity
+ok 47 - related Chinese task descriptions yield evidence-linked hints, never confirmed identity
+  ---
+  duration_ms: 3.62849
+  type: 'test'
+  ...
+# Subtest: common postings are bounded
+ok 48 - common postings are bounded
+  ---
+  duration_ms: 16.90694
+  type: 'test'
+  ...
+# Subtest: BM25 ignores shared field names and ranks matching content
+ok 49 - BM25 ignores shared field names and ranks matching content
+  ---
+  duration_ms: 0.808835
+  type: 'test'
+  ...
+1..49
+# tests 49
+# suites 0
+# pass 49
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4172.046539

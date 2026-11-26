@@ -1,0 +1,2 @@
+// Explicit sensitive/fiction flags are honored before provider calls.
+export function heldSource(r){return [r,r?.raw].some(o=>o&&typeof o==='object'&&(['private','sensitive','fiction','roleplay','private_media','night','private_consent'].some(k=>o[k]===true)||['private','sensitive','fiction','roleplay'].includes(o.visibility)||['private','sensitive'].includes(o.privacy)||['fiction','roleplay','imagined'].includes(o.reality)||['fiction','roleplay','imagined'].includes(o.context_kind)));}

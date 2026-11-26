@@ -5,5 +5,6 @@ test('historical auto admission does not promote unresolved current state',()=>{
  for(const kind of ['fact','preference']){assert.ok(eligible({kind,payload:{temporal:{event_at:past,valid_until:past},evidence_status:'direct'}},now));assert.ok(!eligible({kind,payload:{temporal:{event_at:past},evidence_status:'direct'}},now));assert.ok(!eligible({kind,payload:{temporal:{event_at:past,valid_until:future},evidence_status:'direct'}},now));assert.ok(!eligible({kind,payload:{temporal:{event_at:past,valid_until:past},evidence_status:'inferred'}},now));}
  assert.ok(eligible({kind:'affect',payload:{observed_at:past,evidence_status:'direct'}},now));assert.ok(!eligible({kind:'affect',payload:{observed_at:past,evidence_status:'inferred'}},now));
  for(const kind of ['goal','identity','relationship','reflection','media','document'])assert.ok(!eligible({kind,payload:{happened_at:past}},now));
+ assert.ok(eligible({kind:'reflection',payload:{verified_level:'guess'}},now));assert.ok(eligible({kind:'document',payload:{access_status:'received'}},now));
  assert.ok(!eligible({kind:'episode',payload:{happened_at:future}},now));
 });

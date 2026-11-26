@@ -2,7 +2,7 @@
 /* 长明 Everlight · 内核 v0.1
  *
  * 这一版只做一件事：让「一句话进来 → 存下来 → 能搜到 → 有回执」这条链真的闭合。
- * 判据（阿肆 20:24）：要我感受到是什么样子，别人感受到就是什么样子 —— 所以这一版
+ * 判据：要我感受到是什么样子，别人感受到就是什么样子 —— 所以这一版
  *   每一个动作都留回执，每一次查不到都写清"查了哪里、为什么空"。
  *
  * 规矩（照 DESIGN-十二库契约.md）：
@@ -12,7 +12,7 @@
  *
  * 用法：
  *   node everlight.mjs init --name "长明" --calls "你" --voice "说话直接" \
- *        --nickname "阿肆" [--boundaries "a,b"] [--never "c,d"]
+ *        --nickname "小名" [--boundaries "a,b"] [--never "c,d"]
  *   node everlight.mjs add "原文" --ref "raw/x.jsonl:1" [--actor user]
  *   node everlight.mjs query "词"
  *   node everlight.mjs status

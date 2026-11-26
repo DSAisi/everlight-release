@@ -1,3 +1,4 @@
+import {historicalRuntime} from './historical-runtime-beta14e.mjs';
 // Policy never grants access: the remote adapter has already validated administrator opt-in.
 // A trusted host may decline the built-in optional remote lane, never disable mandatory recall.
 export function remoteMode(env=process.env){
@@ -16,8 +17,13 @@ export function retrievalInventory(core,{remoteConfigured=false,mode='auto',env=
   trusted_plugins:core.retrievalProviders.filter(p=>p.name!=='local-bm25').map(p=>({name:p.name,execution:'synchronous',transport:'not_declared'})),
   host_hint_supported:true,model_autonomous_hint_verified:false,remote_usage_measured:false};
 }
-export async function recallWithPolicy(core,body,remote,mode){
+export async function recallWithPolicy(core,body,remote,mode,historical=null){
  const decision=chooseRetrieval({remoteConfigured:!!remote,mode,hint:body.retrieval_hint});
- // Never pass an untrusted routing object into the audit. The second argument is server-owned.
- return decision.remote_vector==='attempt'?core.recallParallel(body,remote,decision):core.recall(body,[],decision);
+ let pending;const cachedRemote=b=>pending??=Promise.resolve().then(()=>remote(b));
+ const run=d=>d.remote_vector==='attempt'?core.recallParallel(body,cachedRemote,d):core.recall(body,[],d);
+ const initial=await run(decision);
+ if(!historical||mode==='off'||body.raw_evidence!==true||body.association_parent||initial.selected.length||initial.raw_evidence?.length||initial.continuity?.length||initial.degraded||initial.lanes?.some(l=>l.reason==='explicit_evidence_cue'||l.reason==='canonical_temporal_conflict'))return initial;
+ const req=await historical(body);if(!req)return initial;
+ const next={...decision,historical_probe_run_id:initial.run_id};Object.defineProperty(next,historicalRuntime,{value:req});
+ return run(next);
 }

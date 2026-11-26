@@ -1,0 +1,246 @@
+[
+  {
+    "id": "S03-1",
+    "text": "下周记得把迁移报告交给客户。",
+    "labels": [
+      "S03"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S03-2",
+    "text": "这件事我还没做完，周五要交。",
+    "labels": [
+      "S03"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S03-3",
+    "text": "我答应今晚给她回信。",
+    "labels": [
+      "S03"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S04-1",
+    "text": "去年秋天我们在海边散步。",
+    "labels": [
+      "S04"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S04-2",
+    "text": "那个接口前天就部署好了。",
+    "labels": [
+      "S04"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S04-3",
+    "text": "今天和朋友看了一场电影。",
+    "labels": [
+      "S04"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S05-1",
+    "text": "最近不再喜欢甜饮料。",
+    "labels": [
+      "S05"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S05-2",
+    "text": "我平时喝无糖豆浆。",
+    "labels": [
+      "S05"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S05-3",
+    "text": "这台机器的内存是32GB。",
+    "labels": [
+      "S05"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S06-1",
+    "text": "先打开日志确认端口，再检查进程。",
+    "labels": [
+      "S06"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S06-2",
+    "text": "遇到数据库锁时可以缩短事务。",
+    "labels": [
+      "S06"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S06-3",
+    "text": "这个函数用来把字节转成字符串。",
+    "labels": [
+      "S06"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S07-1",
+    "text": "她是我的同事，不是家人。",
+    "labels": [
+      "S07"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S07-2",
+    "text": "我们是在读书时认识的朋友。",
+    "labels": [
+      "S07"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S07-3",
+    "text": "他是这次项目的负责人。",
+    "labels": [
+      "S07"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S08-1",
+    "text": "听到那个消息我有点难过。",
+    "labels": [
+      "S08"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S08-2",
+    "text": "昨晚说话的时候我特别紧张。",
+    "labels": [
+      "S08"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S08-3",
+    "text": "收到回信我很开心。",
+    "labels": [
+      "S08"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S09-1",
+    "text": "我不愿意为了便利牺牲诚实。",
+    "labels": [
+      "S09"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S09-2",
+    "text": "我擅长整理资料，但不能凭空得知结果。",
+    "labels": [
+      "S09"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S09-3",
+    "text": "我希望成为可靠而独立的助手。",
+    "labels": [
+      "S09"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S11-1",
+    "text": "我意识到自己把旧状态当成了新状态。",
+    "labels": [
+      "S11"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S11-2",
+    "text": "复盘后发现之前忽略了反例。",
+    "labels": [
+      "S11"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S11-3",
+    "text": "我需要改变只凭第一印象判断的习惯。",
+    "labels": [
+      "S11"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S12-1",
+    "text": "收到名为交接说明的PDF文件。",
+    "labels": [
+      "S12"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S12-2",
+    "text": "这张图是项目的界面截图。",
+    "labels": [
+      "S12"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "S12-3",
+    "text": "文档版本为第三版，文件尚未阅读。",
+    "labels": [
+      "S12"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "multi1",
+    "text": "我昨天完成部署，答应明天再检查一次。",
+    "labels": [
+      "S04",
+      "S03"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "multi2",
+    "text": "我从这次错误学到要先看日志再修复。",
+    "labels": [
+      "S11",
+      "S06"
+    ],
+    "external_ok": true
+  },
+  {
+    "id": "multi3",
+    "text": "收到朋友的信以后我很高兴。",
+    "labels": [
+      "S07",
+      "S08",
+      "S12"
+    ],
+    "external_ok": true
+  }
+]

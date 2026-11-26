@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {importProgressView} from './import-progress-beta14d.mjs';
 import {DREAM_INVITATION} from '../core/dream-host-beta09.mjs';
 import {inviteProfile} from '../contracts/invite-profile-beta08.mjs';
 import {resolveUnified,forwardConnect} from './unified-api-w3h5.mjs';
@@ -313,6 +314,7 @@ async function proxyCore(req,res,u){if(UI_TOKEN.length>=16 && !authed(req))throw
 async function api(req,res,u){const route=u.pathname.slice('/ui/api/v1'.length),method=req.method;
  if(!route.startsWith('/host/')&&route!=='/status'&&UI_TOKEN.length>=16&&!authed(req))throw bad(401,'需要先登录长明');
  if(!legacyLocalEnabled&&!['/status','/health','/updates','/updates/check'].includes(route))throw bad(403,'旧版本地面板仅支持 personal；当前作用域禁止访问');
+ if(route==='/imports/status'&&method==='GET'){requireWrite(req);return json(res,200,importProgressView(path.dirname(DB_FILE)));}
  if(route==='/updates'&&method==='GET'){requireWrite(req);return json(res,200,updateJobs.view());}
  if(route==='/updates/authorize'&&method==='POST'){requireWrite(req);return json(res,202,await updateJobs.authorize(await read(req)));}
  if(route==='/host/updates'&&method==='GET'){requireHost(req);return json(res,200,{job:updateJobs.active()||null});}

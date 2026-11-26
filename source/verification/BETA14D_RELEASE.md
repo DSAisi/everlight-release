@@ -1,0 +1,2 @@
+# Beta14-D candidate
+Core 382/382; panel 32/32; converter 47/47, Node v22.16.0. Synthetic 100000×32 vector test found final record in 478ms (not production quality or 1024-dimensional benchmark). Money budget uses supplied prices and conservative reservation, not invoice verification. No production or paid provider accessed. Final release/signing/live host not validated. Historical dense results still explicit candidates. See manual 08 and pending list.

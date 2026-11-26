@@ -48,7 +48,8 @@
       "timestamp",
       "time",
       "observed_at",
-      "recorded_at"
+      "recorded_at",
+      "at"
     ]
   },
   "transport": {

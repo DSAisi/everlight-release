@@ -1,0 +1,62 @@
+{
+  "corpus_sha256": "f01f1a63f5c1cf1f36b15f447632b1613d4f2fd7d5ff18a0b42c9a500c1c493f",
+  "n": 30,
+  "source": "caller-labeled corpus; labels not sent to provider",
+  "lexical": {
+    "n": 30,
+    "coverage": 0.2,
+    "top1_hit": 0.13333333333333333,
+    "top3_hit": 0.13333333333333333,
+    "multilabel_recall_at3": 0.11764705882352941,
+    "per_slot": {
+      "S03": {
+        "n": 4,
+        "top1": 0,
+        "top3": 0
+      },
+      "S04": {
+        "n": 4,
+        "top1": 1,
+        "top3": 1
+      },
+      "S05": {
+        "n": 3,
+        "top1": 0,
+        "top3": 0
+      },
+      "S06": {
+        "n": 4,
+        "top1": 0,
+        "top3": 0
+      },
+      "S07": {
+        "n": 4,
+        "top1": 0,
+        "top3": 0
+      },
+      "S08": {
+        "n": 4,
+        "top1": 0,
+        "top3": 0
+      },
+      "S09": {
+        "n": 3,
+        "top1": 0,
+        "top3": 0
+      },
+      "S11": {
+        "n": 4,
+        "top1": 1,
+        "top3": 1
+      },
+      "S12": {
+        "n": 4,
+        "top1": 2,
+        "top3": 2
+      }
+    }
+  },
+  "embedding": null,
+  "llm": null,
+  "external_rows": 0
+}

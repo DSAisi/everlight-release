@@ -14,6 +14,7 @@ export class EverlightHostAdapter{
  recall(scope,query,limit=8,{rawEvidence=false,focusContext=null,retrievalHint,associationParent}={}){return this.request('POST','/api/v8/recall',{scope,query,limit,...(rawEvidence===true?{raw_evidence:true}:{}),...(focusContext?{focus_context:focusContext}:{}),...(retrievalHint!==undefined?{retrieval_hint:retrievalHint}:{}),...(associationParent?{association_parent:associationParent}:{})})}
  workContact(event){return this.request('POST','/api/v8/relations/work-contact',event)}
  searchSourceEvidence(scope,query,limit=8){return this.request('POST','/api/v8/s01/search',{scope,query,limit})}
+ searchHistoricalVectorEvidence(scope,provider,dimensions,embedding,limit=5){return this.request('POST','/api/v8/s01/historical-vector-search',{scope,provider,dimensions,embedding,limit})}
  expandSourceEvidence(scope,id,hash,offset=0,limit=500){return this.request('POST','/api/v8/s01/expand',{scope,id,hash,offset,limit})}
  /** A caller-supplied snapshot is not a trusted provider receipt. */
  snapshotReadback(scope,run_id,messages,memoryMessageIndex=0){return this.request('POST','/api/v8/recall/readback',{scope,run_id,messages,...(memoryMessageIndex?{memory_message_index:memoryMessageIndex}:{})})}
