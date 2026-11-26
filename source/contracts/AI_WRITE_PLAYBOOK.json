@@ -1,0 +1,202 @@
+{
+  "version": "8.8-audit",
+  "scope": "any configured isolated scope",
+  "rules": {
+    "no_source_no_write": true,
+    "private_requires_explicit_authorization": true,
+    "proposal_not_memory": true,
+    "approval_not_commit": true,
+    "selection_not_injection": true,
+    "task_completed_not_verified": true
+  },
+  "slots": {
+    "S01": {
+      "writer": "host",
+      "kinds": [
+        "raw_event"
+      ],
+      "path": "source",
+      "source_required": true,
+      "canonical_write": false,
+      "human_ai_visible": true
+    },
+    "S02": {
+      "writer": "engine",
+      "kinds": [
+        "run_receipt"
+      ],
+      "path": "internal",
+      "source_required": true,
+      "canonical_write": false,
+      "human_ai_visible": true
+    },
+    "S03": {
+      "writer": "reviewed",
+      "kinds": [
+        "goal"
+      ],
+      "path": "proposal_review_commit",
+      "source_required": true,
+      "canonical_write": true,
+      "human_ai_visible": true
+    },
+    "S04": {
+      "writer": "reviewed",
+      "kinds": [
+        "episode"
+      ],
+      "path": "proposal_review_commit",
+      "source_required": true,
+      "canonical_write": true,
+      "human_ai_visible": true
+    },
+    "S05": {
+      "writer": "reviewed",
+      "kinds": [
+        "fact",
+        "preference"
+      ],
+      "path": "proposal_review_commit",
+      "source_required": true,
+      "canonical_write": true,
+      "human_ai_visible": true
+    },
+    "S06": {
+      "writer": "reviewed",
+      "kinds": [
+        "procedure",
+        "code"
+      ],
+      "path": "proposal_review_commit",
+      "source_required": true,
+      "canonical_write": true,
+      "human_ai_visible": true
+    },
+    "S07": {
+      "writer": "reviewed",
+      "kinds": [
+        "relationship"
+      ],
+      "path": "proposal_review_commit",
+      "source_required": true,
+      "canonical_write": true,
+      "human_ai_visible": true
+    },
+    "S08": {
+      "writer": "reviewed",
+      "kinds": [
+        "affect"
+      ],
+      "path": "proposal_review_commit",
+      "source_required": true,
+      "canonical_write": true,
+      "human_ai_visible": true
+    },
+    "S09": {
+      "writer": "authorized",
+      "kinds": [
+        "identity"
+      ],
+      "path": "proposal_review_commit",
+      "source_required": true,
+      "canonical_write": true,
+      "human_ai_visible": true
+    },
+    "S10": {
+      "writer": "engine",
+      "kinds": [
+        "recall_trace"
+      ],
+      "path": "internal",
+      "source_required": true,
+      "canonical_write": false,
+      "human_ai_visible": true
+    },
+    "S11": {
+      "writer": "reviewed",
+      "kinds": [
+        "reflection"
+      ],
+      "path": "proposal_review_commit",
+      "source_required": true,
+      "canonical_write": true,
+      "human_ai_visible": true
+    },
+    "S12": {
+      "writer": "reviewed",
+      "kinds": [
+        "document",
+        "media"
+      ],
+      "path": "proposal_review_commit",
+      "source_required": true,
+      "canonical_write": true,
+      "human_ai_visible": true
+    }
+  },
+  "ordinary_write": [
+    "POST /api/v8/source",
+    "POST /api/v8/guidance (advisory)",
+    "POST /api/v8/proposal/validate",
+    "POST /api/v8/proposal",
+    "POST /api/v8/review",
+    "POST /api/v8/commit",
+    "GET /api/v8/memories"
+  ],
+  "event_write": [
+    "POST /api/v8/source",
+    "POST /api/v8/write/events",
+    "GET /api/v8/write/inbox",
+    "POST /api/v8/write/process",
+    "POST /api/v8/review",
+    "POST /api/v8/commit",
+    "GET /api/v8/memories"
+  ],
+  "task_progress": [
+    "GET /api/v8/tasks/board",
+    "POST /api/v8/source",
+    "POST /api/v8/tasks/event",
+    "GET /api/v8/tasks/board"
+  ],
+  "task_reminder": [
+    "POST /api/v8/tasks/reporting",
+    "POST /api/v8/tasks/reporting/tick",
+    "GET /api/v8/shared/actions",
+    "POST /api/v8/shared/ack",
+    "POST /api/v8/shared/delivery",
+    "POST /api/v8/shared/resolve",
+    "GET /api/v8/shared/results"
+  ],
+  "photo_flow": [
+    "dashboard /host/evidence",
+    "dashboard /host/media/completed",
+    "dashboard /media/... readback"
+  ],
+  "night_flow": [
+    "dashboard /vault/setup",
+    "dashboard /vault/auto",
+    "dashboard /host/night/reminder",
+    "dashboard /host/night/capture",
+    "dashboard /vault/entries"
+  ],
+  "blockers": [
+    "full historical machine templates missing",
+    "photo and night vault not unified with core v8",
+    "host signed receipts absent",
+    "real cross-host end-to-end tests absent"
+  ],
+  "easy_write_e0": {
+    "discovery": "GET /api/v8/write/easy-capabilities",
+    "host_submit": "POST /api/v8/write/easy",
+    "model_tool": "remember",
+    "host_owns": [
+      "scope",
+      "source_id",
+      "versions",
+      "idempotency_key",
+      "authorization",
+      "evidence"
+    ],
+    "rule": "When host registers remember, use it rather than raw D9 templates; normal capture is automatic. Candidate is not committed memory. Special routes remain separate."
+  }
+}

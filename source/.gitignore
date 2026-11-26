@@ -1,0 +1,14 @@
+trial-beta/
+trial-data/
+private-data/
+provider.local.json
+*.sqlite*
+*.env
+node_modules/
+.ai-deploy.lock
+*.local.json
+.env*
+imports/
+backups/
+*.pem
+*.key

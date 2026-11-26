@@ -1,0 +1,25 @@
+// Owner-authorized portable archive. Read-only SQLite snapshot, not a backup/restore protocol.
+import fs from 'node:fs';import path from 'node:path';import os from 'node:os';
+import {DatabaseSync} from 'node:sqlite';import {createHash} from 'node:crypto';import {execFile} from 'node:child_process';import {promisify} from 'node:util';import {pipeline} from 'node:stream/promises';import {fileURLToPath} from 'node:url';
+const self=fileURLToPath(import.meta.url),exec=promisify(execFile);
+const slots=['S03','S04','S05','S06','S07','S08','S09','S11','S12'];
+const bad=(status,message)=>Object.assign(new Error(message),{status});
+export function options(q){const scope=q.get('scope'),mode=q.get('mode')||'memory',format=q.get('format')||'jsonl',slot=q.get('slot')||'',history=q.get('history')||'0';if(!scope||scope.length>256||!['memory','raw'].includes(mode)||!['jsonl','txt'].includes(format)||!['0','1'].includes(history)||slot&&!slots.includes(slot)||mode==='raw'&&(slot||history==='1'))throw bad(422,'导出参数无效');return {scope,mode,format,slot,history:history==='1'};}
+export function writeArchive(dbPath,out,o,{maxBytes=256*1024*1024}={}){
+ const db=new DatabaseSync(dbPath,{readOnly:true}),digest=createHash('sha256');let fd,bytes=0;const counts={memory:0,source:0};const refs=new Set();
+ const line=(s,hash=true)=>{const b=Buffer.from(s);if(bytes+b.length>maxBytes)throw bad(413,'导出超过 256 MiB；请按库导出或使用离线备份');if(fs.writeSync(fd,b)!==b.length)throw Error('short export write');bytes+=b.length;if(hash)digest.update(b);};
+ const emit=r=>{if(o.format==='jsonl')line(JSON.stringify(r)+'\n');else{if(r.type==='source'){const b=r.body;const text=typeof b==='string'?b:typeof b?.text==='string'?b.text:typeof b?.content==='string'?b.content:JSON.stringify(b);line(`\n【原话】 ${r.id}\n发生时间：${r.happened_at||'未记录'} ｜ 入库：${r.at}\n来源：${r.source_ref}\n${text}\n`);}else if(r.type==='memory'){line(`\n【${r.slot} · ${r.kind}】 ${r.id} / v${r.revision} / ${r.state}\n入库：${r.created_at}\n来源：${r.sources.join(', ')}\n${JSON.stringify(r.payload,null,2)}\n`);}else line(JSON.stringify(r)+'\n');}};
+ try{fd=fs.openSync(out,'wx',0o600);db.exec('PRAGMA query_only=ON; BEGIN');
+ emit({type:'manifest',schema:'everlight.portable.v1',scope:o.scope,mode:o.mode,slot:o.slot||null,history:o.history,format:o.format,exported_at:new Date().toISOString(),notice:'明文个人档案；非完整恢复包。排除撤回内容、候选、运行回执、召回账本、独立私密库、媒体原件、密钥配置及向量；原话或记忆正文可能含敏感信息。'});
+ if(o.mode==='memory'){
+ const sql=`SELECT m.* FROM memories m WHERE m.scope=? AND m.state ${o.history?"IN ('current','superseded')":"='current'"} ${o.slot?'AND m.slot=?':''} AND NOT EXISTS(SELECT 1 FROM tombstones t WHERE t.scope=m.scope AND t.kind='memory' AND t.target=m.id) AND NOT EXISTS(SELECT 1 FROM json_each(m.sources) j LEFT JOIN sources s ON s.id=j.value AND s.scope=m.scope AND s.revoked=0 WHERE s.id IS NULL) ORDER BY m.slot,m.id,m.revision`;
+ for(const r of db.prepare(sql).iterate(o.scope,...(o.slot?[o.slot]:[]))){const sources=JSON.parse(r.sources);if(!Array.isArray(sources)||!sources.length)continue;for(const s of sources)refs.add(s);emit({type:'memory',...r,payload:JSON.parse(r.payload),sources});counts.memory++;}
+ }
+ const query='SELECT * FROM sources WHERE scope=? AND revoked=0 ORDER BY at,id';
+ for(const r of db.prepare(query).iterate(o.scope)){if(o.mode==='memory'&&!refs.has(r.id))continue;const b=JSON.parse(r.body);const happened_at=typeof b==='object'&&b!==null?(b.happened_at??b.occurred_at??b.observed_at??null):null;emit({type:'source',...r,body:b,happened_at});counts.source++;}
+ db.exec('COMMIT');const hash=digest.digest('hex');line(JSON.stringify({type:'complete',counts,sha256_before_footer:hash})+'\n',false);fs.fsyncSync(fd);fs.closeSync(fd);fd=undefined;return counts;
+ }catch(e){if(fd!==undefined){fs.closeSync(fd);fs.unlinkSync(out);}throw e;}finally{db.close();}
+}
+let busy=false;
+export async function serveArchive(res,dbPath,o){if(busy)throw bad(429,'已有导出正在执行，请稍后重试');busy=true;let dir;try{dir=fs.mkdtempSync(path.join(os.tmpdir(),'everlight-export-'));const out=path.join(dir,'archive');try{await exec(process.execPath,[self,dbPath,out,JSON.stringify(o)],{timeout:120000,maxBuffer:8192});}catch(e){throw bad(e.code===13?413:503,'导出未完成；请按库导出或使用离线命令');}if(res.destroyed)return;res.writeHead(200,{'content-type':o.format==='jsonl'?'application/x-ndjson; charset=utf-8':'text/plain; charset=utf-8','content-disposition':`attachment; filename="everlight-${o.mode}.${o.format}"`,'content-length':fs.statSync(out).size,'cache-control':'no-store','x-content-type-options':'nosniff'});await pipeline(fs.createReadStream(out),res).catch(()=>res.destroy());}finally{if(dir)fs.rmSync(dir,{recursive:true,force:true});busy=false;}}
+if(process.argv[1]&&path.resolve(process.argv[1])===self){try{const [db,out,raw]=process.argv.slice(2);const o=JSON.parse(raw);const valid=options(new URLSearchParams({...o,history:o.history?'1':'0'}));writeArchive(db,out,valid);}catch(e){console.error('Export failed; no complete archive.');process.exitCode=e.status===413?13:1;}}

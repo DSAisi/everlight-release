@@ -1,0 +1,66 @@
+
+/* Only secondary pages receive these styles. Approved homepage CSS/style assets remain untouched. */
+:root{--deep-ink:#442e57;--deep-muted:#94819f}
+#screen{min-height:calc(100vh - 248px)}
+#screen.deep-page{padding:10px 14px 112px}
+.deep-page .page-heading{padding:9px 5px 16px}
+.deep-page .page-heading .overline{letter-spacing:.16em;text-transform:uppercase;font-size:10px;color:#a289af}
+.deep-page .page-heading h1{margin:4px 0 3px;font-size:25px;font-weight:650;font-family:'Songti SC',serif;color:#63457b}
+.deep-page .page-heading p{color:#967fa5;font-size:12px;margin:0;line-height:1.65}
+.deep-page .panel{padding:16px;margin-bottom:13px}
+.deep-page .panel-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.deep-page .panel-title h2{font-size:16px;color:#573b70;margin:0}
+.deep-page .line-item{display:flex;width:100%;text-align:left;align-items:center;gap:10px;padding:13px 4px;border:0;border-top:1px solid #eee6f2;background:transparent;color:#4b365d;min-height:64px}
+.deep-page .line-item:first-child{border-top:0}
+.deep-page .line-item svg{height:19px;width:19px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.deep-page .item-icon{display:grid;place-items:center;width:39px;height:39px;border:1px solid white;border-radius:15px;flex:none;background:#f4eafb;color:#865eaf}
+.deep-page .item-copy{flex:1;min-width:0;display:grid;gap:3px}
+.deep-page .item-copy strong{font-size:13px;line-height:1.55;overflow-wrap:anywhere}
+.deep-page .item-copy small{color:#9a8aaa;font-size:10px;line-height:1.5;overflow-wrap:anywhere}
+.deep-page .line-item>svg:last-child{width:15px;height:15px;color:#ad9eb8}
+.deep-page .library-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.deep-page .lib-tile{display:flex;flex-direction:column;gap:7px;align-items:flex-start;text-align:left;border:1px solid #fff;background:linear-gradient(145deg,#fffaff,#f6edfd);border-radius:17px;padding:13px;box-shadow:inset 0 0 0 1px #e8dcef66,0 4px 10px #9779b31c;min-height:112px}
+.deep-page .lib-tile svg{width:23px;height:23px;stroke:#8055a2;fill:none;stroke-width:1.4}
+.deep-page .lib-tile strong{color:#463057;font-size:13px}.deep-page .lib-tile small{color:#9b88ab;font-size:11px}
+.deep-page .field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 12px;margin:8px 0 0}
+.deep-page .field{min-width:0;margin:0}.deep-page .field dt{font-size:10px;color:#a18eac}.deep-page .field dd{font-size:12px;color:#4b3b59;margin:4px 0 0;overflow-wrap:anywhere;white-space:pre-wrap}
+.deep-page .quote{border-radius:15px;padding:14px;background:#faf2ff;border:1px solid #ece0f5;color:#60476f;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}
+.deep-page .row-actions,.deep-page .form-actions,.deep-page .pager,.deep-page .chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.deep-page .soft-btn,.deep-page .chip-btn{min-height:39px;padding:8px 13px;border:1px solid #e3d5ed;border-radius:14px;color:#684985;background:#fffafd;font-size:12px;font-weight:600}
+.deep-page .soft-btn.primary,.deep-page .chip-btn.active{color:#fff;background:#8d6bb3;border-color:#8d6bb3}
+.deep-page .soft-btn.danger{color:#af526f;background:#fff3f8}
+.deep-page input,.deep-page select,.deep-page textarea{width:100%;min-width:0;min-height:42px;border:1px solid #e5d9ee;border-radius:12px;padding:10px 12px;background:#fffaff;color:#47344f;font-size:14px}
+.deep-page textarea{min-height:110px;resize:vertical}
+.deep-page label{display:block;font-size:12px;font-weight:600;margin:12px 0 5px}
+.deep-page .tag{margin-right:3px}.deep-page .muted,.deep-page .hint,.deep-page .meta{color:#96839e;font-size:11px;line-height:1.8}
+.deep-page .hint{margin:8px 2px}.deep-page .empty{padding:16px 8px;color:#a18eae;font-size:12px;text-align:center}
+.deep-page .code{font-size:11px;overflow:auto;max-height:300px;background:#faf5fc;padding:10px;border-radius:8px}
+.deep-page .version-row{border-top:1px solid #ede4f1;padding:12px 2px;overflow-wrap:anywhere}
+.deep-page .version-row small{display:block;color:#9b86a9;font-size:10px}
+.deep-page .version-row p{font-size:12px;line-height:1.7}
+.deep-page .pager{justify-content:space-between;padding:8px 0 16px}
+.deep-page .screen-alert{color:#995572;background:#fff1f7;padding:13px;border-radius:14px;font-size:12px}
+.deep-page details summary{cursor:pointer;padding:8px 0;font-size:12px}
+.breadcrumb{padding:0 15px;font-size:11px;color:#aa97b5;min-height:0}
+.breadcrumb:empty{display:none}.breadcrumb .back{color:#795695;padding:7px;border:0;background:none;font-size:12px}
+.breadcrumb .back svg{width:14px;height:14px;transform:rotate(180deg)}
+#drawerScrim{position:fixed;inset:0;z-index:19;background:#3f275b75;backdrop-filter:blur(3px)}
+#drawerScrim[hidden]{display:none!important}
+#sideDrawer.drawer{max-height:100dvh;overflow:auto}
+#drawerNav,#drawerLibraries{display:block}
+.drawer .drawer-link{width:100%;display:flex;align-items:center;gap:8px;text-align:left;min-height:39px}
+.drawer .drawer-link svg{height:16px;width:16px}
+.drawer .drawer-link span{margin-left:auto;color:#b39fbc}
+.bottom-nav .nav-icon svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+#tabbar .center-button img{height:70px;width:70px}
+.toast{position:fixed;z-index:24;bottom:calc(106px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(10px);background:#50335f;color:#fff;border-radius:12px;padding:10px 13px;max-width:calc(100vw - 36px);opacity:0;pointer-events:none;transition:.2s;font-size:11px}
+.toast.visible{opacity:1;transform:translateX(-50%) translateY(0)}
+.loading{text-align:center;color:#a189ab;padding:45px 10px;font-size:12px}
+@media(max-width:370px){.deep-page .field-grid{grid-template-columns:1fr}.deep-page .library-grid{gap:7px}.deep-page .lib-tile{padding:12px}}
+#screen:focus{outline:none}
+
+/* v9.7 — module directory, mobile first; preserve original pages */
+.el97-directory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.el97-directory-item{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-height:98px;padding:16px 30px 15px 15px;border:1px solid rgba(150,116,180,.2);border-radius:17px;background:linear-gradient(140deg,rgba(249,244,255,.95),rgba(255,248,252,.95));color:#453455;text-align:left;cursor:pointer}
+.el97-directory-item:focus-visible{outline:3px solid #9a69cc;outline-offset:2px}.el97-directory-title{font-weight:700;font-size:14px}.el97-directory-item small{font-size:11px;line-height:1.6;color:#746880}.el97-directory-arrow{position:absolute;right:12px;top:13px;color:#9b76b5;font-size:20px}
+@media(max-width:350px){.el97-directory{grid-template-columns:1fr}.el97-directory-item{min-height:75px}}

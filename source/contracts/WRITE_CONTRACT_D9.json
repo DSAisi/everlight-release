@@ -1,0 +1,1565 @@
+{
+  "version": "everlight.write.d9",
+  "templates": [
+    {
+      "version": "everlight.write.d9",
+      "kind": "goal",
+      "slot": "S03",
+      "categories": [
+        "daily",
+        "work",
+        "learning",
+        "shared_plan",
+        "self_task",
+        "commitment",
+        "custom"
+      ],
+      "required": [
+        "template_version",
+        "contract_version",
+        "category",
+        "summary",
+        "owner",
+        "intent",
+        "state",
+        "acceptance",
+        "priority",
+        "due_at",
+        "report_interval_minutes"
+      ],
+      "allowed": [
+        "template_version",
+        "contract_version",
+        "category",
+        "summary",
+        "owner",
+        "intent",
+        "state",
+        "acceptance",
+        "priority",
+        "due_at",
+        "report_interval_minutes",
+        "category_label",
+        "person_id",
+        "person_ids",
+        "subject_person_id",
+        "owner_person_id",
+        "participant_person_ids"
+      ],
+      "labels": {
+        "summary": "摘要",
+        "owner": "负责人",
+        "intent": "接受任务的意图",
+        "state": "登记状态",
+        "acceptance": "验收条件",
+        "priority": "优先级",
+        "due_at": "截止时间",
+        "report_interval_minutes": "检查间隔（分钟）",
+        "category": "必选分类",
+        "category_label": "自定义分类名"
+      },
+      "nullable": [
+        "due_at"
+      ],
+      "fields": {
+        "category": [
+          "daily",
+          "work",
+          "learning",
+          "shared_plan",
+          "self_task",
+          "commitment",
+          "custom"
+        ],
+        "priority": [
+          "low",
+          "normal",
+          "high"
+        ],
+        "due_at": "ISO8601 with zone or null",
+        "report_interval_minutes": "integer 5..10080; default UI 30",
+        "state": [
+          "todo"
+        ],
+        "category_label": "required for custom"
+      },
+      "rule": "已接受任务；状态变更用任务事件，不重建任务。",
+      "source_required": true,
+      "unknown_rule": "可空字段必须明确 null；缺必需证据暂缓，不猜造；custom 需真实分类名。"
+    },
+    {
+      "version": "everlight.write.d9",
+      "kind": "episode",
+      "slot": "S04",
+      "categories": [
+        "daily",
+        "shared_experience",
+        "work",
+        "learning",
+        "milestone",
+        "conflict",
+        "repair",
+        "custom"
+      ],
+      "required": [
+        "template_version",
+        "contract_version",
+        "category",
+        "summary",
+        "participants",
+        "happened_at",
+        "outcome"
+      ],
+      "allowed": [
+        "template_version",
+        "contract_version",
+        "category",
+        "summary",
+        "participants",
+        "happened_at",
+        "outcome",
+        "time_unknown_reason",
+        "category_label",
+        "person_id",
+        "person_ids",
+        "subject_person_id",
+        "owner_person_id",
+        "participant_person_ids"
+      ],
+      "labels": {
+        "summary": "摘要",
+        "participants": "参与者",
+        "happened_at": "实际发生时间",
+        "time_unknown_reason": "未知时间原因",
+        "outcome": "事件结果",
+        "category": "必选分类",
+        "category_label": "自定义分类名"
+      },
+      "nullable": [
+        "outcome"
+      ],
+      "fields": {
+        "participants": "nonempty string array",
+        "happened_at": "ISO8601 with zone or null",
+        "time_unknown_reason": "required when null"
+      },
+      "rule": "只写实际经历；不能把梦境、计划、角色扮演写作事实。",
+      "source_required": true,
+      "unknown_rule": "可空字段必须明确 null；缺必需证据暂缓，不猜造；custom 需真实分类名。"
+    },
+    {
+      "version": "everlight.write.d9",
+      "kind": "fact",
+      "slot": "S05",
+      "categories": [
+        "person",
+        "project",
+        "environment",
+        "event",
+        "knowledge",
+        "configuration",
+        "custom"
+      ],
+      "required": [
+        "template_version",
+        "contract_version",
+        "category",
+        "statement",
+        "subject",
+        "attribution",
+        "temporal",
+        "evidence_status"
+      ],
+      "allowed": [
+        "template_version",
+        "contract_version",
+        "category",
+        "statement",
+        "subject",
+        "attribution",
+        "temporal",
+        "evidence_status",
+        "category_label",
+        "person_id",
+        "person_ids",
+        "subject_person_id",
+        "owner_person_id",
+        "participant_person_ids"
+      ],
+      "labels": {
+        "statement": "具体陈述",
+        "subject": "主体",
+        "attribution": "归属及来源说明",
+        "temporal": "有效期和事件时间",
+        "evidence_status": "证据性质",
+        "category": "必选分类",
+        "category_label": "自定义分类名"
+      },
+      "nullable": [],
+      "fields": {
+        "evidence_status": [
+          "direct",
+          "reported",
+          "inferred"
+        ],
+        "temporal": "fact/preference: {key,event_at,valid_from,valid_until}; unknown null"
+      },
+      "rule": "一条可核对陈述，旧事实保留有效期；推断不得写为已证实事实。",
+      "source_required": true,
+      "unknown_rule": "可空字段必须明确 null；缺必需证据暂缓，不猜造；custom 需真实分类名。"
+    },
+    {
+      "version": "everlight.write.d9",
+      "kind": "preference",
+      "slot": "S05",
+      "categories": [
+        "communication",
+        "habit",
+        "aesthetic",
+        "interaction",
+        "food",
+        "work",
+        "boundary",
+        "custom"
+      ],
+      "required": [
+        "template_version",
+        "contract_version",
+        "category",
+        "statement",
+        "subject",
+        "attribution",
+        "temporal",
+        "evidence_status"
+      ],
+      "allowed": [
+        "template_version",
+        "contract_version",
+        "category",
+        "statement",
+        "subject",
+        "attribution",
+        "temporal",
+        "evidence_status",
+        "category_label",
+        "person_id",
+        "person_ids",
+        "subject_person_id",
+        "owner_person_id",
+        "participant_person_ids"
+      ],
+      "labels": {
+        "statement": "具体陈述",
+        "subject": "主体",
+        "attribution": "归属及来源说明",
+        "temporal": "有效期和事件时间",
+        "evidence_status": "证据性质",
+        "category": "必选分类",
+        "category_label": "自定义分类名"
+      },
+      "nullable": [],
+      "fields": {
+        "evidence_status": [
+          "direct",
+          "reported",
+          "inferred"
+        ],
+        "temporal": "fact/preference: {key,event_at,valid_from,valid_until}; unknown null"
+      },
+      "rule": "当事人明确的持续偏好；临时选择不是长期偏好。",
+      "source_required": true,
+      "unknown_rule": "可空字段必须明确 null；缺必需证据暂缓，不猜造；custom 需真实分类名。"
+    },
+    {
+      "version": "everlight.write.d9",
+      "kind": "procedure",
+      "slot": "S06",
+      "categories": [
+        "operation",
+        "troubleshooting",
+        "workflow",
+        "learning",
+        "custom"
+      ],
+      "required": [
+        "template_version",
+        "contract_version",
+        "category",
+        "problem",
+        "solution",
+        "environment",
+        "verification",
+        "verification_detail"
+      ],
+      "allowed": [
+        "template_version",
+        "contract_version",
+        "category",
+        "problem",
+        "solution",
+        "environment",
+        "verification",
+        "verification_detail",
+        "category_label",
+        "person_id",
+        "person_ids",
+        "subject_person_id",
+        "owner_person_id",
+        "participant_person_ids"
+      ],
+      "labels": {
+        "problem": "问题",
+        "solution": "方法或解决步骤",
+        "environment": "验证环境",
+        "verification": "验证等级",
+        "verification_detail": "验证结果与证据",
+        "category": "必选分类",
+        "category_label": "自定义分类名"
+      },
+      "nullable": [
+        "verification_detail"
+      ],
+      "fields": {
+        "verification": [
+          "untested",
+          "tested_once",
+          "repeatable"
+        ]
+      },
+      "rule": "问题、环境、步骤及实际结果，不把未经测试的方法标成成功。",
+      "source_required": true,
+      "unknown_rule": "可空字段必须明确 null；缺必需证据暂缓，不猜造；custom 需真实分类名。"
+    },
+    {
+      "version": "everlight.write.d9",
+      "kind": "code",
+      "slot": "S06",
+      "categories": [
+        "implementation",
+        "bugfix",
+        "test",
+        "configuration",
+        "custom"
+      ],
+      "required": [
+        "template_version",
+        "contract_version",
+        "category",
+        "problem",
+        "solution",
+        "environment",
+        "verification",
+        "verification_detail"
+      ],
+      "allowed": [
+        "template_version",
+        "contract_version",
+        "category",
+        "problem",
+        "solution",
+        "environment",
+        "verification",
+        "verification_detail",
+        "category_label",
+        "person_id",
+        "person_ids",
+        "subject_person_id",
+        "owner_person_id",
+        "participant_person_ids"
+      ],
+      "labels": {
+        "problem": "问题",
+        "solution": "方法或解决步骤",
+        "environment": "验证环境",
+        "verification": "验证等级",
+        "verification_detail": "验证结果与证据",
+        "category": "必选分类",
+        "category_label": "自定义分类名"
+      },
+      "nullable": [
+        "verification_detail"
+      ],
+      "fields": {
+        "verification": [
+          "untested",
+          "tested_once",
+          "repeatable"
+        ]
+      },
+      "rule": "记录代码位置及环境，禁止把密钥写入记忆。",
+      "source_required": true,
+      "unknown_rule": "可空字段必须明确 null；缺必需证据暂缓，不猜造；custom 需真实分类名。"
+    },
+    {
+      "version": "everlight.write.d9",
+      "kind": "relationship",
+      "slot": "S07",
+      "categories": [
+        "family",
+        "partner",
+        "friend",
+        "colleague",
+        "acquaintance",
+        "other",
+        "custom"
+      ],
+      "required": [
+        "template_version",
+        "contract_version",
+        "category",
+        "subject",
+        "relation",
+        "object",
+        "circle",
+        "boundary",
+        "object_person_id",
+        "subject_person_id"
+      ],
+      "allowed": [
+        "template_version",
+        "contract_version",
+        "category",
+        "subject",
+        "relation",
+        "object",
+        "circle",
+        "boundary",
+        "object_person_id",
+        "subject_person_id",
+        "category_label",
+        "person_id",
+        "person_ids",
+        "owner_person_id",
+        "participant_person_ids"
+      ],
+      "labels": {
+        "subject": "主体",
+        "relation": "关系性质",
+        "object": "对象",
+        "circle": "关系圈子",
+        "boundary": "明确边界",
+        "subject_person_id": "主体稳定 ID",
+        "object_person_id": "对象稳定 ID",
+        "category": "必选分类",
+        "category_label": "自定义分类名"
+      },
+      "nullable": [
+        "boundary"
+      ],
+      "fields": {
+        "circle": [
+          "family",
+          "partner",
+          "friend",
+          "colleague",
+          "acquaintance",
+          "other",
+          "custom"
+        ],
+        "boundary": "explicit evidence-backed text or null (unknown)",
+        "object_person_id": "confirmed person id",
+        "subject_person_id": "confirmed same-scope person id or null; preserve original subject/object labels",
+        "category_label": "required for custom"
+      },
+      "rule": "同域已确认人物；原称呼保留，不凭同名合并。分类必须等于圈子。",
+      "source_required": true,
+      "unknown_rule": "可空字段必须明确 null；缺必需证据暂缓，不猜造；custom 需真实分类名。"
+    },
+    {
+      "version": "everlight.write.d9",
+      "kind": "affect",
+      "slot": "S08",
+      "categories": [
+        "joy",
+        "sadness",
+        "anger",
+        "fear",
+        "surprise",
+        "calm",
+        "mixed",
+        "other",
+        "custom"
+      ],
+      "required": [
+        "template_version",
+        "contract_version",
+        "category",
+        "expression",
+        "attribution",
+        "observed_at",
+        "evidence_status",
+        "subject",
+        "context"
+      ],
+      "allowed": [
+        "template_version",
+        "contract_version",
+        "category",
+        "expression",
+        "attribution",
+        "observed_at",
+        "evidence_status",
+        "subject",
+        "context",
+        "category_label",
+        "person_id",
+        "person_ids",
+        "subject_person_id",
+        "owner_person_id",
+        "participant_person_ids"
+      ],
+      "labels": {
+        "expression": "原始情绪表达",
+        "attribution": "归属及来源说明",
+        "observed_at": "观察时间",
+        "evidence_status": "证据性质",
+        "subject": "表达者",
+        "context": "触发情境",
+        "category": "必选分类",
+        "category_label": "自定义分类名"
+      },
+      "nullable": [
+        "context"
+      ],
+      "fields": {
+        "evidence_status": [
+          "direct",
+          "reported",
+          "inferred"
+        ],
+        "temporal": "fact/preference: {key,event_at,valid_from,valid_until}; unknown null"
+      },
+      "rule": "记录表达而非诊断；推断明确标注。",
+      "source_required": true,
+      "unknown_rule": "可空字段必须明确 null；缺必需证据暂缓，不猜造；custom 需真实分类名。"
+    },
+    {
+      "version": "everlight.write.d9",
+      "kind": "identity",
+      "slot": "S09",
+      "categories": [
+        "self_description",
+        "role",
+        "value",
+        "ability",
+        "boundary",
+        "custom"
+      ],
+      "required": [
+        "template_version",
+        "contract_version",
+        "category",
+        "statement",
+        "subject",
+        "basis",
+        "evidence_status"
+      ],
+      "allowed": [
+        "template_version",
+        "contract_version",
+        "category",
+        "statement",
+        "subject",
+        "basis",
+        "evidence_status",
+        "category_label",
+        "person_id",
+        "person_ids",
+        "subject_person_id",
+        "owner_person_id",
+        "participant_person_ids"
+      ],
+      "labels": {
+        "statement": "具体陈述",
+        "subject": "主体",
+        "basis": "身份依据",
+        "evidence_status": "证据性质",
+        "category": "必选分类",
+        "category_label": "自定义分类名"
+      },
+      "nullable": [],
+      "fields": {
+        "evidence_status": [
+          "direct",
+          "reported",
+          "inferred"
+        ],
+        "temporal": "fact/preference: {key,event_at,valid_from,valid_until}; unknown null"
+      },
+      "rule": "仅授权且有根据的持久身份，临时扮演不入身份库。",
+      "source_required": true,
+      "unknown_rule": "可空字段必须明确 null；缺必需证据暂缓，不猜造；custom 需真实分类名。"
+    },
+    {
+      "version": "everlight.write.d9",
+      "kind": "reflection",
+      "slot": "S11",
+      "categories": [
+        "lesson",
+        "self_reflection",
+        "relationship",
+        "method",
+        "error",
+        "custom"
+      ],
+      "required": [
+        "template_version",
+        "contract_version",
+        "category",
+        "claim",
+        "observation",
+        "verified_level",
+        "next_action"
+      ],
+      "allowed": [
+        "template_version",
+        "contract_version",
+        "category",
+        "claim",
+        "observation",
+        "verified_level",
+        "next_action",
+        "category_label",
+        "person_id",
+        "person_ids",
+        "subject_person_id",
+        "owner_person_id",
+        "participant_person_ids"
+      ],
+      "labels": {
+        "claim": "反思结论",
+        "observation": "实际观察",
+        "verified_level": "验证等级",
+        "next_action": "后续行动",
+        "category": "必选分类",
+        "category_label": "自定义分类名"
+      },
+      "nullable": [
+        "next_action"
+      ],
+      "fields": {},
+      "rule": "观察与结论分开，验证级别据实填写。",
+      "source_required": true,
+      "unknown_rule": "可空字段必须明确 null；缺必需证据暂缓，不猜造；custom 需真实分类名。"
+    },
+    {
+      "version": "everlight.write.d9",
+      "kind": "document",
+      "slot": "S12",
+      "categories": [
+        "reference",
+        "project",
+        "research",
+        "contract",
+        "note",
+        "custom"
+      ],
+      "required": [
+        "template_version",
+        "contract_version",
+        "category",
+        "path",
+        "version",
+        "summary",
+        "access_status"
+      ],
+      "allowed": [
+        "template_version",
+        "contract_version",
+        "category",
+        "path",
+        "version",
+        "summary",
+        "access_status",
+        "category_label"
+      ],
+      "labels": {
+        "path": "资料或媒体引用",
+        "version": "原始版本",
+        "summary": "内容摘要",
+        "access_status": "阅读状态",
+        "category": "必选分类",
+        "category_label": "自定义分类名"
+      },
+      "nullable": [],
+      "fields": {},
+      "rule": "真实路径和版本；仅收到不等于阅读。",
+      "source_required": true,
+      "unknown_rule": "可空字段必须明确 null；缺必需证据暂缓，不猜造；custom 需真实分类名。"
+    },
+    {
+      "version": "everlight.write.d9",
+      "kind": "media",
+      "slot": "S12",
+      "categories": [
+        "photo",
+        "generated_image",
+        "tool_capture",
+        "audio",
+        "video",
+        "other",
+        "custom"
+      ],
+      "required": [
+        "template_version",
+        "contract_version",
+        "category",
+        "path",
+        "version",
+        "media_type",
+        "summary",
+        "observed_at",
+        "model_request_ref",
+        "consumption_receipt"
+      ],
+      "allowed": [
+        "template_version",
+        "contract_version",
+        "category",
+        "path",
+        "version",
+        "media_type",
+        "summary",
+        "observed_at",
+        "model_request_ref",
+        "consumption_receipt",
+        "category_label",
+        "private_media",
+        "consent_ref"
+      ],
+      "labels": {
+        "path": "资料或媒体引用",
+        "version": "原始版本",
+        "media_type": "媒体类型",
+        "summary": "读取后的描述",
+        "observed_at": "读取时间",
+        "model_request_ref": "模型请求引用",
+        "consumption_receipt": "消费凭据",
+        "category": "必选分类",
+        "category_label": "自定义分类名"
+      },
+      "nullable": [],
+      "fields": {},
+      "rule": "媒体需要真实宿主消费凭据；私密媒体不得走普通 S12。",
+      "source_required": true,
+      "unknown_rule": "可空字段必须明确 null；缺必需证据暂缓，不猜造；custom 需真实分类名。"
+    }
+  ],
+  "system": {
+    "S01": {
+      "writer": "host",
+      "route": "POST /api/v8/source",
+      "required": [
+        "scope",
+        "actor",
+        "kind",
+        "source_ref",
+        "body"
+      ],
+      "optional": [
+        "source_id"
+      ],
+      "rule": "原话原样保存，角色、渠道、会话、发生时间由宿主提供；不制造缺失来源。"
+    },
+    "S02": {
+      "writer": "engine",
+      "route": null,
+      "rule": "真实动作自动回执，AI 不可提案或伪造。"
+    },
+    "S10": {
+      "writer": "engine",
+      "route": "POST /api/v8/recall + POST /api/v8/recall/readback",
+      "rule": "真实检索和请求快照才记账，选中不等于注入。"
+    }
+  },
+  "modules": {
+    "tasks": {
+      "category": [
+        "daily",
+        "work",
+        "learning",
+        "shared_plan",
+        "self_task",
+        "commitment",
+        "custom"
+      ],
+      "route": "/api/v8/tasks/event",
+      "required": [
+        "scope",
+        "memory_id",
+        "expected_revision",
+        "action",
+        "state",
+        "actor",
+        "source_id",
+        "detail",
+        "idempotency_key"
+      ],
+      "rule": "任务新增走 S03；进展事件需证据，独立验收禁止 AI 自证。"
+    },
+    "dreams": {
+      "category": [
+        "review",
+        "consolidation",
+        "emotion",
+        "relationship",
+        "conflict",
+        "self_reflection",
+        "association",
+        "imagined",
+        "custom"
+      ],
+      "route": "/api/v8/dream/start",
+      "required": [
+        "scope",
+        "idempotency_key",
+        "metadata"
+      ],
+      "metadata": [
+        "category",
+        "purpose",
+        "category_label (custom only)"
+      ],
+      "rule": "梦境只进入梦境账本；候选经独立审核。"
+    },
+    "people": {
+      "category": [
+        "nickname",
+        "historical",
+        "address"
+      ],
+      "route": "/api/v8/relations/name/propose",
+      "required": [
+        "scope",
+        "person_id",
+        "name",
+        "kind",
+        "source_id",
+        "reason"
+      ],
+      "rule": "address 另需 speaker_person_id；人类独立审核。"
+    },
+    "photos": {
+      "category": [
+        "human_message",
+        "ai_generated",
+        "tool_capture",
+        "ai_bookmarked",
+        "manual"
+      ],
+      "rule": "真实原图、归档授权、宿主事件和模型消费凭据；相册及标签由明确授权操作写入。"
+    },
+    "night": {
+      "category": [
+        "moment",
+        "preference",
+        "promise",
+        "reflection"
+      ],
+      "reality": [
+        "real",
+        "fiction"
+      ],
+      "rule": "只走夜契专用授权通道；服务端不解密、不普通召回、不写明文。"
+    },
+    "cognition": {
+      "category": [
+        "domains",
+        "env",
+        "vitals"
+      ],
+      "route": "/api/v8/ui/observations",
+      "required": [
+        "scope",
+        "name",
+        "action",
+        "idempotency_key",
+        "title",
+        "detail",
+        "observed_at"
+      ],
+      "rule": "domains/env 要真实 source_id；vitals 需独立密钥、逐条同意和 source_ref。"
+    }
+  },
+  "api": {
+    "POST /api/v8/vector/page": {
+      "required": [
+        "scope",
+        "consumer"
+      ],
+      "optional": [
+        "limit"
+      ],
+      "rule": "向量消费者增量读取，不是记忆写入"
+    },
+    "POST /api/v8/vector/ack": {
+      "required": [
+        "scope",
+        "consumer",
+        "expected",
+        "seq"
+      ],
+      "optional": [],
+      "rule": "按水位确认，不得由模型伪造"
+    },
+    "POST /api/v8/write/reminders/tick": {
+      "required": [
+        "scope"
+      ],
+      "optional": [
+        "limit"
+      ],
+      "rule": "宿主调度缺字段提醒，不等于送达"
+    },
+    "POST /api/v8/write/strict-proposal": {
+      "required": [
+        "scope",
+        "slot",
+        "kind",
+        "payload",
+        "source_refs",
+        "reason",
+        "idempotency_key"
+      ],
+      "optional": [
+        "target_id",
+        "expected_revision"
+      ],
+      "rule": "严格候选，修订须同时提供目标及版本"
+    },
+    "POST /api/v8/write/templated-proposal": {
+      "required": [
+        "scope",
+        "slot",
+        "kind",
+        "payload",
+        "source_refs",
+        "reason",
+        "idempotency_key"
+      ],
+      "optional": [
+        "target_id",
+        "expected_revision"
+      ],
+      "rule": "兼容入口；D9严格模式同样校验"
+    },
+    "POST /api/v8/guidance": {
+      "required": [
+        "scope",
+        "source_id"
+      ],
+      "optional": [
+        "signals",
+        "privacy",
+        "consent"
+      ],
+      "rule": "仅建议"
+    },
+    "POST /api/v8/proposal/validate": {
+      "required": [],
+      "optional": [
+        "scope",
+        "slot",
+        "kind",
+        "payload",
+        "source_refs",
+        "reason",
+        "idempotency_key",
+        "target_id",
+        "expected_revision"
+      ],
+      "rule": "纯校验，返回错误而非写入"
+    },
+    "POST /api/v8/source": {
+      "required": [
+        "scope",
+        "actor",
+        "kind",
+        "source_ref",
+        "body"
+      ],
+      "optional": [
+        "source_id"
+      ],
+      "rule": "仅可信宿主保存原始记录"
+    },
+    "POST /api/v8/media/summary": {
+      "required": [
+        "scope",
+        "event_id",
+        "source_id",
+        "media_ref",
+        "media_type",
+        "summary",
+        "observed_at",
+        "model_request_ref",
+        "consumption_receipt",
+        "consumed",
+        "category"
+      ],
+      "optional": [
+        "private_media",
+        "consent_ref",
+        "idempotency_key",
+        "category_label"
+      ],
+      "rule": "仅可信宿主消费证明；严格模式类别必填，私密媒体禁入普通库"
+    },
+    "POST /api/v8/shared/actions": {
+      "required": [
+        "scope",
+        "kind",
+        "actor",
+        "body",
+        "idempotency_key"
+      ],
+      "optional": [
+        "target"
+      ],
+      "rule": "提醒队列；不能凭消息宣称已经送达"
+    },
+    "POST /api/v8/shared/ack": {
+      "required": [
+        "scope",
+        "id",
+        "actor",
+        "receipt_ref"
+      ],
+      "optional": [
+        "decision"
+      ],
+      "rule": "宿主确认收件"
+    },
+    "POST /api/v8/shared/delivery": {
+      "required": [
+        "scope",
+        "id",
+        "request_ref",
+        "messages"
+      ],
+      "optional": [],
+      "rule": "真实请求快照"
+    },
+    "POST /api/v8/shared/resolve": {
+      "required": [
+        "scope",
+        "id",
+        "actor",
+        "outcome",
+        "source_id",
+        "detail",
+        "idempotency_key"
+      ],
+      "optional": [],
+      "rule": "真实响应与依据；任务进展需匹配任务事件"
+    },
+    "POST /api/v8/write/classification-page": {
+      "required": [
+        "scope"
+      ],
+      "optional": [
+        "cursor",
+        "limit"
+      ],
+      "rule": "分类器读取待分类项"
+    },
+    "POST /api/v8/write/classify": {
+      "required": [
+        "scope",
+        "event_id",
+        "result"
+      ],
+      "optional": [],
+      "rule": "分类结果需要真实原文；旧最小分类不满足 D9 会暂缓"
+    },
+    "POST /api/v8/write/events": {
+      "required": [
+        "scope",
+        "event_id",
+        "source_id",
+        "origin",
+        "signal",
+        "payload"
+      ],
+      "optional": [
+        "reason",
+        "sensitive",
+        "consent",
+        "evidence"
+      ],
+      "rule": "宿主真实事件；缺字段留 held"
+    },
+    "POST /api/v8/host/capture-and-route": {
+      "required": [
+        "source",
+        "event"
+      ],
+      "optional": [
+        "scope",
+        "process"
+      ],
+      "rule": "原话持久化后候选路由；不得伪造事件"
+    },
+    "POST /api/v8/write/drain": {
+      "required": [
+        "scope"
+      ],
+      "optional": [
+        "limit"
+      ],
+      "rule": "处理持久队列"
+    },
+    "POST /api/v8/write/process": {
+      "required": [
+        "scope",
+        "event_id"
+      ],
+      "optional": [],
+      "rule": "处理已有事件，不复写原话"
+    },
+    "POST /api/v8/proposal": {
+      "required": [
+        "scope",
+        "slot",
+        "kind",
+        "payload",
+        "source_refs",
+        "reason",
+        "idempotency_key"
+      ],
+      "optional": [
+        "target_id",
+        "expected_revision"
+      ],
+      "rule": "旧入口仍受 D9 严格开关约束"
+    },
+    "POST /api/v8/governance": {
+      "required": [
+        "scope",
+        "joint",
+        "expected_epoch"
+      ],
+      "optional": [],
+      "rule": "独立治理管理员，不给 AI"
+    },
+    "POST /api/v8/joint/ai": {
+      "required": [
+        "scope",
+        "id",
+        "digest",
+        "decision",
+        "reason"
+      ],
+      "optional": [
+        "auto_commit"
+      ],
+      "rule": "独立AI裁决凭据"
+    },
+    "POST /api/v8/joint/human": {
+      "required": [
+        "scope",
+        "id",
+        "digest",
+        "decision",
+        "reason"
+      ],
+      "optional": [
+        "auto_commit"
+      ],
+      "rule": "独立人类裁决凭据"
+    },
+    "POST /api/v8/review/scoped": {
+      "required": [
+        "scope",
+        "id",
+        "decision",
+        "reviewer",
+        "classification",
+        "review_reason",
+        "proposal_text"
+      ],
+      "optional": [],
+      "rule": "审核注释不覆盖正文"
+    },
+    "POST /api/v8/review/reminders": {
+      "required": [
+        "scope"
+      ],
+      "optional": [
+        "cursor",
+        "limit"
+      ],
+      "rule": "扫描审核提醒"
+    },
+    "POST /api/v8/commit/recover": {
+      "required": [
+        "scope"
+      ],
+      "optional": [
+        "cursor",
+        "limit"
+      ],
+      "rule": "恢复已授权待提交候选"
+    },
+    "POST /api/v8/commit/scoped": {
+      "required": [
+        "scope",
+        "id"
+      ],
+      "optional": [
+        "digest",
+        "decision",
+        "reason",
+        "auto_commit"
+      ],
+      "rule": "正式提交后读回，仍需治理批准"
+    },
+    "POST /api/v8/review": {
+      "required": [],
+      "optional": [
+        "scope",
+        "id",
+        "decision",
+        "reviewer"
+      ],
+      "rule": "已停用，410"
+    },
+    "POST /api/v8/commit": {
+      "required": [],
+      "optional": [
+        "scope",
+        "id"
+      ],
+      "rule": "已停用，410"
+    },
+    "POST /api/v8/revoke": {
+      "required": [
+        "scope",
+        "kind",
+        "target",
+        "reason"
+      ],
+      "optional": [],
+      "rule": "撤回 source/memory，管理员或可信宿主"
+    },
+    "POST /api/v8/recall": {
+      "required": [
+        "scope",
+        "query"
+      ],
+      "optional": [
+        "limit",
+        "raw_evidence",
+        "focus_context",
+        "retrieval_hint",
+        "association_parent"
+      ],
+      "rule": "真实检索；可信宿主可建议跳过内置远程向量，不可跳过必要检索。"
+    },
+    "POST /api/v8/recall/readback": {
+      "required": [
+        "scope",
+        "run_id",
+        "messages"
+      ],
+      "optional": [
+        "memory_message_index"
+      ],
+      "rule": "实际宿主出站消息快照"
+    },
+    "POST /api/v8/dream/candidate-decision": {
+      "required": [
+        "scope",
+        "id",
+        "index",
+        "digest",
+        "decision",
+        "reason"
+      ],
+      "optional": [
+        "source_id"
+      ],
+      "rule": "reject/defer/propose；旧自动提案未适配 D9 时拒绝，不绕过"
+    },
+    "POST /api/v8/tasks/evidence": {
+      "required": [
+        "scope",
+        "memory_id",
+        "expected_revision",
+        "kind",
+        "source_id",
+        "actor",
+        "detail",
+        "idempotency_key"
+      ],
+      "optional": [
+        "step_id"
+      ],
+      "rule": "step_add/step_verify/delivery；AI不能独立核验"
+    },
+    "POST /api/v8/dream/resume": {
+      "required": [
+        "scope",
+        "id",
+        "reason"
+      ],
+      "optional": [
+        "require_candidate_decisions"
+      ],
+      "rule": "有证据的恢复说明"
+    },
+    "POST /api/v8/dream/start": {
+      "required": [
+        "scope",
+        "idempotency_key",
+        "metadata"
+      ],
+      "optional": [
+        "source_ids"
+      ],
+      "rule": "metadata.category/purpose；custom需分类名；AI 显式选择同域证据"
+    },
+    "POST /api/v8/dream/advance": {
+      "required": [
+        "scope",
+        "id",
+        "expected_stage"
+      ],
+      "optional": [],
+      "rule": "按阶段推进"
+    },
+    "POST /api/v8/crsi/propose": {
+      "required": [
+        "scope",
+        "baseline",
+        "challenger"
+      ],
+      "optional": [],
+      "rule": "策略候选，不自动应用"
+    },
+    "POST /api/v8/crsi/evaluate": {
+      "required": [
+        "scope",
+        "id",
+        "baseline_score",
+        "challenger_score",
+        "evidence"
+      ],
+      "optional": [],
+      "rule": "独立评估证据"
+    },
+    "POST /api/v8/tasks/event": {
+      "required": [
+        "scope",
+        "memory_id",
+        "expected_revision",
+        "action",
+        "state",
+        "actor",
+        "source_id",
+        "detail",
+        "idempotency_key"
+      ],
+      "optional": [
+        "receipt_ref"
+      ],
+      "rule": "任务状态与事件匹配；验收须真实独立回执"
+    },
+    "POST /api/v8/tasks/reporting": {
+      "required": [
+        "scope",
+        "memory_id",
+        "interval_minutes",
+        "enabled"
+      ],
+      "optional": [],
+      "rule": "配置定时检查，不等于执行任务"
+    },
+    "POST /api/v8/tasks/reporting/tick": {
+      "required": [
+        "scope"
+      ],
+      "optional": [
+        "at"
+      ],
+      "rule": "可信调度时钟"
+    },
+    "POST /api/v8/health/notify": {
+      "required": [
+        "scope"
+      ],
+      "optional": [
+        "stale_minutes"
+      ],
+      "rule": "异常检查提醒，不编造恢复"
+    },
+    "POST /api/v8/relations/name/propose": {
+      "required": [
+        "scope",
+        "person_id",
+        "name",
+        "kind",
+        "source_id",
+        "reason"
+      ],
+      "optional": [
+        "speaker_person_id",
+        "channel"
+      ],
+      "rule": "nickname/historical/address；address须称呼者ID"
+    },
+    "POST /api/v8/relations/name/review": {
+      "required": [
+        "scope",
+        "id",
+        "decision",
+        "reason"
+      ],
+      "optional": [
+        "reviewer"
+      ],
+      "rule": "独立人类裁决 approve/reject/retire"
+    },
+    "POST /api/v8/relations/person": {
+      "required": [
+        "scope",
+        "label"
+      ],
+      "optional": [],
+      "rule": "可信宿主建立人物索引；不能依据同名合并"
+    },
+    "POST /api/v8/relations/alias/propose": {
+      "required": [
+        "scope",
+        "person_id",
+        "channel",
+        "external_id",
+        "source_id",
+        "reason"
+      ],
+      "optional": [
+        "display_name"
+      ],
+      "rule": "真实账号ID及来源"
+    },
+    "POST /api/v8/relations/alias/review": {
+      "required": [
+        "scope",
+        "id",
+        "decision"
+      ],
+      "optional": [
+        "reviewer"
+      ],
+      "rule": "独立人类裁决"
+    },
+    "POST /api/v8/relations/resolve": {
+      "required": [
+        "scope",
+        "channel",
+        "external_id"
+      ],
+      "optional": [],
+      "rule": "已确认账号查询"
+    },
+    "POST /api/v8/relations/trigger-recall": {
+      "required": [
+        "scope",
+        "trigger"
+      ],
+      "optional": [
+        "channel",
+        "external_id",
+        "text",
+        "person_id",
+        "speaker_person_id",
+        "limit"
+      ],
+      "rule": "真实人物触发，未知身份不猜"
+    },
+    "POST /api/v8/ui/observations": {
+      "required": [
+        "scope",
+        "name",
+        "action"
+      ],
+      "optional": [
+        "id",
+        "idempotency_key",
+        "title",
+        "detail",
+        "observed_at",
+        "source_id",
+        "source_ref",
+        "consent"
+      ],
+      "rule": "domains/env/vitals；按操作校验；vitals独立授权"
+    },
+    "POST /api/v8/ui/annotations": {
+      "required": [
+        "scope",
+        "slot",
+        "id",
+        "expected_revision",
+        "note",
+        "review_status"
+      ],
+      "optional": [
+        "expected_target_revision"
+      ],
+      "rule": "人工注释，不改正文"
+    },
+    "POST /api/v8/ui/fact-revision": {
+      "required": [
+        "scope",
+        "id",
+        "expected_revision",
+        "statement",
+        "reason",
+        "source_id",
+        "idempotency_key"
+      ],
+      "optional": [],
+      "rule": "旧修订入口；严格模式要求完整新提案，勿自动猜有效期"
+    },
+    "POST /api/v8/relations/work-contact": {
+      "required": [
+        "scope",
+        "channel",
+        "external_id",
+        "project_id",
+        "event_id",
+        "occurred_at",
+        "text",
+        "record_allowed",
+        "context_allowed"
+      ],
+      "optional": [
+        "limit"
+      ],
+      "rule": "受信工作宿主，明确客户项目授权；捕获原话并返回候选上下文，不证明已注入"
+    },
+    "POST /api/v8/dream/opportunity": {
+      "required": [
+        "scope",
+        "idle",
+        "enabled"
+      ],
+      "optional": [],
+      "rule": "可信宿主提供空闲状态与授权；仅邀请，不强制启动"
+    },
+    "POST /api/v8/dream/improvement": {
+      "required": [
+        "scope",
+        "id",
+        "source_refs",
+        "observation",
+        "claim",
+        "next_action",
+        "idempotency_key"
+      ],
+      "optional": [],
+      "rule": "已完成非虚构梦境的 S11 待验证反思候选"
+    }
+  }
+}

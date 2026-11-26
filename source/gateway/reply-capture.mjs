@@ -1,0 +1,8 @@
+// Observe complete textual replies without modifying the provider's wire bytes.
+export function replyCapture(contentType,limit=1024*1024){
+ const sse=contentType.includes('text/event-stream');const decoder=new TextDecoder();let buffer='',size=0,invalid=false,done=false;const choices=new Map();
+ function add(c){if(!c||typeof c!=='object'||!Number.isInteger(c.index)||c.index<0){invalid=true;return}const old=choices.get(c.index)||{text:'',finish:null};const t=c.delta?.content??c.message?.content;if(typeof t==='string')old.text+=t;if(c.finish_reason)old.finish=c.finish_reason;choices.set(c.index,old)}
+ function event(raw){const data=raw.split(/\r?\n/).filter(l=>l.startsWith('data:')).map(l=>l.slice(5).replace(/^ /,'')).join('\n');if(!data)return;if(done){invalid=true;return}if(data==='[DONE]'){done=true;return}try{const v=JSON.parse(data);if(!v||v.error||!Array.isArray(v.choices)){invalid=true;return}for(const c of v.choices)add(c)}catch{invalid=true}}
+ function drain(){let m;while((m=/\r?\n\r?\n/.exec(buffer))){event(buffer.slice(0,m.index));buffer=buffer.slice(m.index+m[0].length)}}
+ return {push(chunk){size+=chunk.length;if(size>limit){invalid=true;buffer='';return}if(invalid)return;buffer+=decoder.decode(chunk,{stream:true});if(sse)drain()},finish(){if(invalid)return [];buffer+=decoder.decode();if(sse){drain();if(buffer.trim()||!done||invalid)return []}else{try{const v=JSON.parse(buffer);if(!v||v.error||!Array.isArray(v.choices))return [];for(const c of v.choices)add(c)}catch{return []}}return invalid?[]:[...choices].filter(([,c])=>c.finish==='stop'&&c.text.trim()).map(([index,c])=>({index,text:c.text}))}};
+}

@@ -1,0 +1,4 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {fuseHints} from '../src/fusion.mjs';
+const h=(a,b,score)=>({candidate_ids:[a,b],source_refs:[a+'-source',b+'-source'],score});
+test('fusion prioritizes agreement despite incompatible score scales and preserves evidence',()=>{const r=fuseHints([h('a','b',100),h('a','c',1)],[h('a','c',.9),h('a','d',.8)],{limit:1});const a=r.find(x=>x.candidate_ids[0]==='a');assert.deepEqual(a.candidate_ids,['a','c']);assert.deepEqual(a.source_refs,['a-source','c-source']);assert.equal(a.identity_confirmed,false);assert.equal(a.current_state,null);});
+test('fusion supports lexical-only and empty inputs, deduplicates reversed pairs',()=>{assert.deepEqual(fuseHints([],[]),[]);const r=fuseHints([h('a','b',1),h('b','a',2)],[]);assert.equal(r.length,2);assert.equal(r[0].score,1/61);});

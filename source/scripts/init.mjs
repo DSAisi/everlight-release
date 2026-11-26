@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {randomBytes} from 'node:crypto';
+const dir=path.resolve(process.argv[2]||'trial-data');
+fs.mkdirSync(dir,{recursive:true,mode:0o700});
+const scope='personal';
+const env={EVERLIGHT_BOUND_SCOPE:scope,EVERLIGHT_UI_SCOPE:scope,EVERLIGHT_CORE_ADAPTER:'v8',EVERLIGHT_CORE_URL:'http://127.0.0.1:8790',EVERLIGHT_CORE_DB:path.join(dir,'core.sqlite'),EVERLIGHT_UI_DB:path.join(dir,'ui.sqlite'),EVERLIGHT_REVIEW_WRITES:'1',EVERLIGHT_GOVERNANCE_UI:'1',EVERLIGHT_TRIAL_GATEWAY:'0',EVERLIGHT_TRIAL_VECTOR:'0',EVERLIGHT_VECTOR_CONSUMER:'trial-local',EVERLIGHT_VECTOR_DB:path.join(dir,'vector.sqlite'),EVERLIGHT_TASK_REPORTING_OPT_IN:'1',EVERLIGHT_DREAM_AUTO:'0',EVERLIGHT_AUTO_COMMIT:'0',EVERLIGHT_CLASSIFIER_OPT_IN:'0'};
+for(const k of ['GATEWAY_KEY','VECTOR_TOKEN','CORE_TOKEN','SHARED_HOST_TOKEN','HOST_TOKEN','UI_TOKEN','AI_DECISION_TOKEN','HUMAN_DECISION_TOKEN','GOVERNANCE_ADMIN_TOKEN'])env['EVERLIGHT_'+k]=randomBytes(32).toString('hex');
+fs.writeFileSync(path.join(dir,'trial.env'),Object.entries(env).map(([k,v])=>`${k}=${JSON.stringify(v)}`).join('\n')+'\n',{flag:'wx',mode:0o600});
+console.log('Created isolated trial configuration:',path.join(dir,'trial.env'));

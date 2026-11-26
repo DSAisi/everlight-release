@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import vm from 'node:vm';
+const ctx={window:{},document:{addEventListener(){}}};vm.runInNewContext(readFileSync(new URL('../mainline.js',import.meta.url),'utf8'),ctx);
+test('Beta08 internal pages are not registered, notification and settings retained',()=>{for(const p of ['growth','autonomy','learning','evolution','correction','commitments','affect','motivation'])assert.equal(ctx.window.EverlightMainline.handles('/'+p),false,p);for(const p of ['notifications','controls'])assert.equal(ctx.window.EverlightMainline.handles('/'+p),true);});

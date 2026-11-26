@@ -1,0 +1,89 @@
+{
+  "version": "9.7",
+  "entries": [
+    {
+      "group": "记忆与认知",
+      "name": "十二库",
+      "route": "/libraries",
+      "kind": "navigation",
+      "ai_delivery": "not_implied"
+    },
+    {
+      "group": "记忆与认知",
+      "name": "记忆检索",
+      "route": "/search",
+      "kind": "navigation",
+      "ai_delivery": "not_implied"
+    },
+    {
+      "group": "记忆与认知",
+      "name": "待审核",
+      "route": "/reviews/pending",
+      "kind": "navigation",
+      "ai_delivery": "not_implied"
+    },
+    {
+      "group": "记忆与认知",
+      "name": "链路审计",
+      "route": "/audit",
+      "kind": "navigation",
+      "ai_delivery": "not_implied"
+    },
+    {
+      "group": "记忆与认知",
+      "name": "认知模块",
+      "route": "/modules",
+      "kind": "navigation",
+      "ai_delivery": "not_implied"
+    },
+    {
+      "group": "记忆与认知",
+      "name": "做梦整理",
+      "route": "/dreams",
+      "kind": "navigation",
+      "ai_delivery": "not_implied"
+    },
+    {
+      "group": "关系与生活",
+      "name": "人物星系",
+      "route": "/relations",
+      "kind": "navigation",
+      "ai_delivery": "not_implied"
+    },
+    {
+      "group": "关系与生活",
+      "name": "任务与待做",
+      "route": "/tasks",
+      "kind": "navigation",
+      "ai_delivery": "not_implied"
+    },
+    {
+      "group": "关系与生活",
+      "name": "光影收藏馆",
+      "route": "/photos",
+      "kind": "navigation",
+      "ai_delivery": "not_implied"
+    },
+    {
+      "group": "关系与生活",
+      "name": "夜契私密记忆",
+      "route": "/night",
+      "kind": "navigation",
+      "ai_delivery": "not_implied"
+    },
+    {
+      "group": "系统与个性化",
+      "name": "系统状态",
+      "route": "/status",
+      "kind": "navigation",
+      "ai_delivery": "not_implied"
+    },
+    {
+      "group": "系统与个性化",
+      "name": "皮肤中心",
+      "route": "/skins",
+      "kind": "navigation",
+      "ai_delivery": "not_implied"
+    }
+  ]
+}

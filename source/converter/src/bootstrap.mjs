@@ -1,0 +1,53 @@
+// Local historical bootstrap. Does not impersonate a reviewer or write directly to SQLite.
+import fs from 'node:fs/promises';
+import {createReadStream} from 'node:fs';
+import {createHash} from 'node:crypto';
+import path from 'node:path';
+import {readInput,sha256,atomicWrite} from './core.mjs';
+import {openExport} from './review.mjs';
+import {errors as d9Errors} from '../../protocol/write-contract-d9.mjs';
+const fileHash=async file=>{const h=createHash('sha256');for await(const b of createReadStream(file))h.update(b);return h.digest('hex')};
+const sourceKey=(scope,r)=>sha256(JSON.stringify([scope,'historical-bootstrap-v1',r.source_id]));
+const iso=v=>typeof v==='string'&&/T.*(?:Z|[+-]\d\d:\d\d)$/.test(v)&&Number.isFinite(Date.parse(v));
+const cleanReason=s=>String(s??'').slice(0,1900);
+// One historical-import authorization; no per-item human intervention for eligible records.
+// Never infer today's state from old messages. Identity, relationship, active goals and media stay excluded.
+export function autoHistoricalEligible(c,now=Date.now()){
+ const p=c.payload??{};const past=v=>iso(v)&&Date.parse(v)<=now;
+ if(c.kind==='episode')return past(p.happened_at);
+ if(['procedure','code'].includes(c.kind))return true;
+ if(c.kind==='affect')return past(p.observed_at)&&p.evidence_status!=='inferred';
+ if(['fact','preference'].includes(c.kind))return past(p.temporal?.event_at)&&past(p.temporal?.valid_until)&&p.evidence_status!=='inferred';
+ return false;
+}
+export async function bootstrap(config,{url,token,hostToken,humanToken,confirmed=false,queue=false,commitBatch=null,automaticReview=null,aiToken=null,fetchImpl=fetch}={}){
+ if(!confirmed||config.scope!=='personal'||!/^http:\/\/127\.0\.0\.1:\d+$/.test(url)||!token||!hostToken)throw Error('仅限独立 personal 内测库，须确认历史导入');
+ if(automaticReview&&(!queue||!humanToken||!aiToken||typeof automaticReview!=='function'||commitBatch))throw Error('自动审核须有真实 AI 回调与批次授权');
+ if(commitBatch&&(!queue||!humanToken||!/^[a-f0-9]{64}$/.test(commitBatch)))throw Error('批次提交须提供审核授权和批次哈希');
+ const work=path.resolve(config.workDir),source=path.join(work,'normalized.jsonl'),plan=JSON.parse(await fs.readFile(path.join(work,'plan.json'),'utf8'));
+ const hash=await fileHash(source);if(plan.format!=='everlight.batch.plan.v1'||plan.source_sha256!==hash||!Number.isInteger(plan.count)||plan.count<1||plan.count>100000)throw Error('准备文件校验失败；请重新 prepare');
+ const lock=path.join(work,'run.lock'),fd=await fs.open(lock,'wx');try{
+ const refs=new Map(), evidence=new Map();let count=0;
+ const make=r=>({scope:config.scope,actor:r.actor,kind:'historical_import',source_ref:r.source_id,source_id:sourceKey(config.scope,r),body:{...r,historical:true,imported:true,origin:'historical',continuity_live:false}});
+ // Validate every input before mutation. Old events must never become current continuity.
+ for await(const r of readInput(source,'jsonl')){count++;if(r.seq!==count||typeof r.source_id!=='string'||!r.source_id||refs.has(r.source_id)||typeof r.actor!=='string'||!r.actor.trim()||typeof r.text!=='string')throw Error('原话记录结构或重复 ID 错误：'+count);const b=make(r);if(Buffer.byteLength(JSON.stringify(b))>1024*1024)throw Error('单条原话超出核心 API 上限：'+count);refs.set(r.source_id,b.source_id);if(automaticReview)evidence.set(r.source_id,{source_id:r.source_id,actor:r.actor,happened_at:r.happened_at,text:r.text,conversation_id:r.conversation_id});}
+ if(count!==plan.count||await fileHash(source)!==hash)throw Error('原话覆盖或文件指纹不匹配');
+ let exported,index,batchHash=null,classifications=null;
+ if(queue){exported=await openExport(work);if(exported.manifest.source_sha256!==hash||exported.manifest.records!==count||exported.manifest.transport==='mock')throw Error('分类导出未绑定原话或为模拟数据');const classified=path.join(exported.dir,'everlight-classified-v2.jsonl');if(await fileHash(classified)!==exported.manifest.sha256)throw Error('分类正文指纹不一致');classifications={classified:0,no_candidate:0,needs_review:0};const seen=new Set();for await(const item of readInput(classified,'jsonl')){if(!refs.has(item.source_id)||seen.has(item.source_id)||!Object.hasOwn(classifications,item.status))throw Error('分类覆盖不一致');seen.add(item.source_id);classifications[item.status]++;}if(seen.size!==count)throw Error('分类记录不完整');index=JSON.parse(await fs.readFile(path.join(exported.dir,'association-review.json'),'utf8'));batchHash=sha256(JSON.stringify([hash,exported.generation,exported.manifest.association_sha256]));if(commitBatch&&commitBatch!==batchHash)throw Error('授权批次已经变化');}
+ const req=async(route,body,decision)=>{const r=await fetchImpl(url+'/api/v8/'+route,{method:body?'POST':'GET',redirect:'error',headers:{authorization:'Bearer '+token,'x-everlight-host-token':hostToken,...(decision?{'x-everlight-decision-token':decision}:{}),...(body?{'content-type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(30000)});if(!r.ok)throw Error(route+' HTTP '+r.status);return r.json()};
+ // No direct DB access; receipts are generated by the actual core. Retrying same prepared input is idempotent.
+ let added=0,reused=0;for await(const r of readInput(source,'jsonl')){const b=make(r),res=await req('source',b);if(res.id!==b.source_id)throw Error('原话回执不匹配');if(res.idempotent)reused++;else added++;}
+ const report={format:'everlight.bootstrap.v1',source_sha256:hash,raw_records:count,new_sources:added,reused_sources:reused,classification_batch:batchHash,classification_status:classifications,queued:0,committed:0,held:0,items:[],production_approved:false};
+ if(queue){const conflicted=new Set((index.identity_conflicts??[]).flatMap(c=>(c.variants??[]).flat()));const history=new Set([...(index.history_groups??[]).flatMap(g=>(g.versions??[]).map(v=>v.candidate_id)),...(index.state_review??[]).flatMap(g=>(g.versions??[]).map(v=>v.candidate_id)),...(index.judgment_review?.items??[]).filter(j=>['conflict','hypothesis_vs_event','state_change'].includes(j.relation)).flatMap(j=>j.candidate_ids??[])]);for(const c of exported.candidates){const item={candidate_id:c.candidate_id,kind:c.kind};const hold=reason=>{report.held++;report.items.push({...item,state:'held',reason})};if(!Array.isArray(c.source_refs)||!c.source_refs.length||c.source_refs.some(r=>!refs.has(r)||conflicted.has(r))||history.has(c.candidate_id)){hold('来源冲突或历史版本待核对');continue;}if(['goal','relationship','identity','media'].includes(c.kind)){hold('历史任务、人物身份或媒体须单独核验');continue;}const p={scope:config.scope,slot:c.slot,kind:c.kind,payload:c.payload,source_refs:c.source_refs.map(r=>refs.get(r)),reason:cleanReason(c.reasons?.join('\n')),idempotency_key:sha256(JSON.stringify([config.scope,'bootstrap-v1',c.candidate_id]))};const errs=d9Errors(p);if(errs.length){hold('D9: '+errs.join('; '));continue;}try{const valid=await req('proposal/validate',p);if(!valid.ok){hold('核心合同校验拒绝');continue;}const res=await req('write/strict-proposal',p);if(!res.id)throw Error('无候选回执');item.proposal_id=res.id;report.queued++;
+ // Batch authorization is not per-item human review; an independent AI decision remains required.
+ if((automaticReview&&autoHistoricalEligible(c))||(commitBatch&&c.kind==='episode'&&iso(c.payload.happened_at)&&Date.parse(c.payload.happened_at)<=Date.now())){
+ const route='joint/status?id='+encodeURIComponent(res.id);let j=await req(route);let current=j.decisions.filter(d=>d.digest===j.digest);
+ if(automaticReview&&!current.some(d=>d.role==='ai'||d.decision==='reject')&&res.state!=='committed'){const decision=await automaticReview({candidate:c,evidence:c.source_refs.map(r=>evidence.get(r))});if(decision?.decision==='approve'||decision?.decision==='reject'){if(typeof decision.reason!=='string'||!decision.reason.trim()||decision.reason.length>1700)throw Error('无有效独立审核理由');await req('joint/ai',{scope:config.scope,id:res.id,digest:j.digest,decision:decision.decision,reason:'历史导入独立模型复核：'+decision.reason},aiToken);j=await req(route);current=j.decisions.filter(d=>d.digest===j.digest);}}if(current.some(d=>d.decision==='reject')||!current.some(d=>d.role==='ai'&&d.decision==='approve')){report.items.push({...item,state:'awaiting_independent_ai_review'});continue;}
+ if(!current.some(d=>d.role==='human'&&d.decision==='approve'))await req('joint/human',{scope:config.scope,id:res.id,digest:j.digest,decision:'approve',reason:'用户明确授权历史导入批次 '+batchHash},humanToken);
+ const committed=await req('commit/scoped',{scope:config.scope,id:res.id});if(!committed.readback_verified)throw Error('正式记忆未读回');report.committed++;report.items.push({...item,state:'committed',memory_id:committed.id});continue;}
+ report.items.push({...item,state:res.state==='committed'?'already_committed':'pending_review'});
+ }catch(e){hold(String(e.message).slice(0,500));}}
+ }
+ await atomicWrite(path.join(work,'bootstrap-report.json'),JSON.stringify(report,null,2));return report;
+ }finally{await fd.close();await fs.unlink(lock);}
+}

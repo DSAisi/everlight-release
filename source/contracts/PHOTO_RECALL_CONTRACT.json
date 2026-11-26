@@ -1,0 +1,24 @@
+{
+  "version": "9.1",
+  "endpoint": "POST /api/v8/media/summary",
+  "caller": "trusted_host",
+  "requires": [
+    "scope",
+    "event_id",
+    "source_id",
+    "media_ref",
+    "media_type",
+    "summary",
+    "observed_at",
+    "model_request_ref",
+    "consumption_receipt",
+    "consumed"
+  ],
+  "result": "pending S12 media candidate; not canonical until review + commit",
+  "recall": "POST /api/v8/recall searches S12 summary and returns memory ID, media reference and source IDs",
+  "limitations": [
+    "host attestation is not independent proof",
+    "private media requires separate consent",
+    "media binaries remain in media store, not in memory payload"
+  ]
+}

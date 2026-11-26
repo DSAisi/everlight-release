@@ -1,0 +1,16 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {EverlightCore} from '../core/engine.mjs';import {compileCanonical} from '../core/write-compiler-w3h6e.mjs';import {approveBoth} from './joint-fixture.mjs';import {recallContent} from '../core/temporal.mjs';
+for(const indexedRecall of [false,true])for(const contextBudget of [0,18000])test(`H6J shared episode evidence flows to CRSI and panel, indexed=${indexedRecall}, budget=${contextBudget}`,()=>{
+ const old=process.env.EVERLIGHT_W2_PERSON_RECALL;process.env.EVERLIGHT_W2_PERSON_RECALL='1';const c=new EverlightCore(':memory:',{indexedRecall,contextBudget});const scope='personal';
+ try{const a=c.relationPerson({scope,label:'小明'}),b=c.relationPerson({scope,label:'小红'});let n=0;
+ const src=(key,body={},s=scope)=>c.source({scope:s,actor:'human',kind:'conversation',source_ref:key,source_id:key,body:{text:key,...body}}).id;
+ const put=(kind,fields,refs,s=scope)=>{const p=c.propose(compileCanonical(c,{scope:s,kind,fields,source_refs:refs,reason:'fixture',idempotency_key:'h6j-'+ ++n}));approveBoth(c,p.id);return c.commit(p.id);};
+ const ep=(summary,who)=>({category:'work',summary,participants:['测试人'],...(who?{participant_person_ids:[who]}:{}),happened_at:null,time_unknown_reason:'无准确时间',outcome:null});
+ const fact=(statement,who)=>({category:'project',statement,subject:'测试项目',attribution:'人类自述',temporal:{key:statement,event_at:null,valid_from:null,valid_until:null},evidence_status:'direct',...(who?{person_id:who}:{})});
+ const shared=src('a'),anchorOnly=src('b'),privateRef=src('c',{private:true}),unrelated=src('d');src('other',{},'other');
+ const seed=put('episode',ep('共同研究',a.id),[shared,anchorOnly]);const linked=put('fact',fact('解决接口问题'),[shared]);const wrong=put('fact',fact('其他人物的状态',b.id),[shared]);const unrelatedMem=put('fact',fact('无关内容'),[unrelated]);const privateMem=put('fact',fact('私密内容'),[shared,privateRef]);const otherScope=put('fact',fact('其他作用域'),['other'],'other');
+ const r=c.recall({scope,query:'小明'});const item=r.selected.find(x=>x.id===linked.id);assert.ok(item);assert.equal(item.event_proof.anchor_id,seed.id);assert.ok(!r.selected.some(x=>[wrong.id,unrelatedMem.id,privateMem.id,otherScope.id].includes(x.id)));assert.equal(c.recall({scope,query:'天气'}).selected.length,0);
+ const panel=c.personMemories({scope,person_id:a.id});assert.equal(panel.items.find(x=>x.memory_id===linked.id).association,'episode_shared_evidence');assert.ok(!panel.items.some(x=>[wrong.id,privateMem.id,otherScope.id].includes(x.memory_id)));assert.match(recallContent(r.selected),/episode_shared_evidence/);const messages=[{role:'system',content:recallContent(r.selected)}];assert.equal(c.verifyActualRequest({scope,run_id:r.run_id,messages}).verified,true);
+ // Anchor-only source withdrawn, linked record remains valid, but relationship proof must disappear.
+ c.revoke({scope,kind:'source',target:anchorOnly,reason:'fixture'});assert.equal(c.verifyActualRequest({scope,run_id:r.run_id,messages}).verified,false);assert.ok(!c.recall({scope,query:'小明'}).selected.some(x=>x.id===linked.id));assert.ok(!c.personMemories({scope,person_id:a.id}).items.some(x=>x.memory_id===linked.id));
+ }finally{c.close();if(old===undefined)delete process.env.EVERLIGHT_W2_PERSON_RECALL;else process.env.EVERLIGHT_W2_PERSON_RECALL=old;}
+});

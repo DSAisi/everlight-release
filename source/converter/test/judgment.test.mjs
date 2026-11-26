@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {judgeHints,validateJudgment} from '../src/judgment.mjs';
+test('judgment rejects invented evidence and invalid relation',()=>{assert.throws(()=>validateJudgment({relation:'same_person',reason:'x',source_refs:['fake']},['a']));assert.throws(()=>validateJudgment({relation:'confirmed',reason:'x',source_refs:['a']},['a']));assert.equal(validateJudgment({relation:'uncertain',reason:'x',source_refs:['a']},['a']).relation,'uncertain')});
+test('judgment disabled by default and requires authorization',async()=>{assert.equal((await judgeHints([],[],[],{})).status,'disabled');await assert.rejects(judgeHints([],[],[],{judgment:{enabled:true},transport:{type:'openai-compatible'}}),/authorized/)});

@@ -1,0 +1,19 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {EverlightCore} from '../core/engine.mjs';import {approveBoth} from './joint-fixture.mjs';import {createGateway} from '../gateway/server.mjs';
+const scope='personal';
+for(const indexedRecall of [false,true])test('H6O consecutive pronouns use verified multi-turn focus, indexed='+indexedRecall,async()=>{
+ const old=process.env.EVERLIGHT_W2_PERSON_RECALL;process.env.EVERLIGHT_W2_PERSON_RECALL='1';const c=new EverlightCore(':memory:',{indexedRecall});let run,focus,observed;
+ const key='x'.repeat(32),answer='我记得。';const a=c.relationPerson({scope,label:'小明'}),b=c.relationPerson({scope,label:'小红'});
+ const put=(person,summary,k)=>{const s=c.source({scope,actor:'human',kind:'conversation',source_ref:k,body:{text:summary}});const p=c.propose({scope,slot:'S04',kind:'episode',payload:{summary,participants:['某人'],participant_person_ids:[person.id]},source_refs:[s.id],reason:'fixture',idempotency_key:k});approveBoth(c,p.id);return c.commit(p.id);};
+ const target=put(a,'共同修复数据库迁移','a'),other=put(b,'一起散步','b');
+ const g=createGateway({scope,key,upstream:'https://example.invalid/v1',upstreamKey:'fixture',models:['m'],capture:true,capturePurpose:'conversation',adapter:{request:async(_,url,v)=>c.captureAndRoute(v),recall:async(s,q,l,o)=>{focus=o.focusContext;run=c.recall({scope:s,query:q,limit:l,focus_context:focus});return run;},snapshotReadback:async(s,r,m)=>c.verifyActualRequest({scope:s,run_id:r,messages:m})},fetchImpl:async(_,o)=>{observed=JSON.parse(o.body);return Response.json({choices:[{index:0,message:{role:'assistant',content:answer},finish_reason:'stop'}]});}});
+ await new Promise(r=>g.listen(0,'127.0.0.1',r));try{
+ const u=content=>({role:'user',content}),r={role:'assistant',content:answer};const send=async messages=>{const res=await fetch('http://127.0.0.1:'+g.address().port+'/v1/chat/completions',{method:'POST',headers:{authorization:'Bearer '+key,'content-type':'application/json'},body:JSON.stringify({model:'m',messages})});assert.equal(res.status,200,await res.clone().text());await res.text();};const reason=()=>run.lanes.find(l=>l.name==='person-association-w2').reason;
+ const first=[u('小明')];await send(first);const second=[...first,r,u('他最近怎么样？')];await send(second);assert.equal(reason(),'verified_previous_person_focus');const third=[...second,r,u('他怎么处理数据库迁移？')];await send(third);assert.equal(reason(),'verified_previous_person_focus');assert.ok(run.selected.some(x=>x.id===target.id));assert.ok(!run.selected.some(x=>x.id===other.id));assert.ok(observed.messages[0].content.includes(target.id));const snapshot={run,focus,messages:observed.messages};assert.equal(c.verifyActualRequest({scope,run_id:run.run_id,messages:observed.messages}).verified,true);
+ // A substituted older reply, unrelated turn, or explicit other person cannot inherit the old identity.
+ await send([first[0],{...r,content:'改过的回复'},second[2],r,third[4]]);assert.notEqual(reason(),'verified_previous_person_focus');
+ const unrelated=[...second,r,u('天气')];await send(unrelated);await send([...unrelated,r,u('他怎么样？')]);assert.notEqual(reason(),'verified_previous_person_focus');
+ const switched=[...second,r,u('小红')];await send(switched);await send([...switched,r,u('她最近怎么样？')]);assert.equal(reason(),'verified_previous_person_focus');assert.ok(run.selected.some(x=>x.id===other.id));assert.ok(!run.selected.some(x=>x.id===target.id));
+ assert.equal(c.recall({scope:'other',query:third[4].content,focus_context:snapshot.focus}).selected.length,0);
+ c.revoke({scope,kind:'source',target:snapshot.focus.chain[1].prior,reason:'withdrawn'});assert.equal(c.verifyActualRequest({scope,run_id:snapshot.run.run_id,messages:snapshot.messages}).verified,false);
+ }finally{await new Promise(r=>g.close(r));c.close();if(old===undefined)delete process.env.EVERLIGHT_W2_PERSON_RECALL;else process.env.EVERLIGHT_W2_PERSON_RECALL=old;}
+});

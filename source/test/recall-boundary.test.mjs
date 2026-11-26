@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {validateRecall} from '../protocol/recall-boundary.mjs';import {createMandatoryTurn} from '../adapters/mandatory-turn.mjs';
+const checked=Array.from({length:12},(_,i)=>'S'+String(i+1).padStart(2,'0'));
+test('exact twelve slots required, not merely twelve distinct values',()=>{assert.doesNotThrow(()=>validateRecall({run_id:'r',checked,selected:[]}));assert.throws(()=>validateRecall({run_id:'r',checked:[...checked.slice(1),'S13'],selected:[]}));});
+test('invalid coverage never reaches transport',async()=>{const run=createMandatoryTurn({scope:'a',adapter:{capture:async()=>{},recall:async()=>({run_id:'r',checked:[...checked.slice(1),'S13'],selected:[]})},transport:async()=>assert.fail('bypass')});assert.equal((await run({event:{scope:'a'},query:'test',messages:[]})).state,'blocked_before_transport');});

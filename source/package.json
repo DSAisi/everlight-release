@@ -1,0 +1,40 @@
+{
+  "name": "everlight-v8-isolated",
+  "version": "9.0.0-beta.13",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs && cd dashboard && npm test",
+    "core": "node core/server.mjs",
+    "dashboard": "cd dashboard && npm start",
+    "write-worker": "node automation/write-worker.mjs",
+    "test:integration": "node test/dual-service-integration.mjs",
+    "gateway": "node gateway/server.mjs",
+    "commit-recovery": "node automation/commit-recovery.mjs",
+    "review-reminders": "node automation/review-reminders.mjs",
+    "classification-worker": "node automation/classification-worker.mjs",
+    "workers": "node automation/supervisor.mjs",
+    "trial:init": "node scripts/init.mjs",
+    "trial:start": "node --env-file=trial-data/trial.env scripts/start.mjs",
+    "vector:serve": "node vector/server.mjs",
+    "beta:init": "node scripts/w3-handoff.mjs init trial-beta 18790 18787",
+    "beta:start": "node scripts/w3-handoff.mjs start trial-beta",
+    "beta:preflight": "node scripts/w3-handoff.mjs preflight trial-beta",
+    "beta:verify": "node scripts/w3-handoff.mjs verify",
+    "beta:gateway": "node scripts/w3-handoff.mjs gateway-config trial-beta",
+    "beta:login": "node scripts/beta-login.mjs",
+    "beta:import": "node scripts/beta-import.mjs",
+    "beta:easy-import": "node scripts/beta-easy-import.mjs",
+    "beta:ai-deploy": "node scripts/beta-ai-deploy.mjs",
+    "beta:release-config": "node scripts/beta-release-config.mjs",
+    "beta:update-host": "node scripts/beta-update-host.mjs",
+    "beta:update-backup": "node scripts/update-snapshot.mjs",
+    "beta:update-verify": "node scripts/update-release.mjs",
+    "beta:update-install": "node scripts/update-install.mjs",
+    "beta:update-health": "node scripts/beta-update-health.mjs",
+    "beta:release-sign": "node scripts/release-sign.mjs"
+  }
+}

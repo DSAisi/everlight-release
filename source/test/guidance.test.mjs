@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {guidance,inspectCandidate,HOST_HOOKS} from '../protocol/write-guidance.mjs';
+test('suggests precise library without committing',()=>{const r=guidance({scope:'demo',source_id:'src-1',signals:['explicit_goal','explicit_preference','explicit_goal']});assert.equal(r.reminders.length,2);assert.deepEqual(r.reminders.map(x=>x.slot),['S03','S05']);assert.equal(r.reminders[0].state,'advisory_only')});
+test('private data is blocked by default',()=>{const r=guidance({scope:'demo',source_id:'s',signals:['experienced_event'],privacy:'intimate'});assert.equal(r.blocked,true);assert.equal(r.reminders.length,0)});
+test('unknown signal cannot invent a library',()=>{const r=guidance({scope:'demo',source_id:'s',signals:['made_up']});assert.deepEqual(r.skipped,['made_up']);assert.equal(r.reminders.length,0)});
+test('validator rejects fabricated source and system slots',()=>{assert.equal(inspectCandidate({slot:'S02',kind:'run_receipt',scope:'demo',reason:'x',idempotency_key:'x',source_refs:['s'],payload:{}}).ok,false);assert.equal(inspectCandidate({slot:'S05',kind:'fact',scope:'demo',reason:'x',idempotency_key:'x',source_refs:['s'],payload:{statement:'a',subject:'b',attribution:'direct_statement'}}).ok,true)});
+test('host integration hook checklist is available',()=>assert.ok(HOST_HOOKS.includes('dispatch_observation')));

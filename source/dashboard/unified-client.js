@@ -1,0 +1,2 @@
+// Keep same-origin cookies, request bodies, binary responses, and existing errors intact.
+(()=>{function url(input){const u=new URL(input,location.href);if(u.origin!==location.origin)return input;const m=/^(.*?)(\/ui\/api\/v1\/.*|\/api\/.*)$/.exec(u.pathname);if(!m||m[2]==='/api/everlight/v1')return input;const q=new URLSearchParams(u.search);q.set('route',m[2]);return m[1]+'/api/everlight/v1?'+q.toString();}window.everlightUrl=url;window.everlightFetch=(input,options)=>fetch(url(input),options);})();

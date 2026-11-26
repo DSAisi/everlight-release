@@ -1,0 +1,64 @@
+{
+  "version": "11.5",
+  "production_approved": false,
+  "authoritative": "contracts/AI_WRITE_PLAYBOOK.json + protocol/portable-v1.mjs + core/engine.mjs",
+  "not_equivalent_to_missing_v1_4_template": true,
+  "credentials": {
+    "bearer": "EVERLIGHT_CORE_TOKEN",
+    "trusted_host_header": "x-everlight-host-token",
+    "browser_must_not_receive_tokens": true
+  },
+  "forced_sequence": [
+    "POST /api/v8/source",
+    "POST /api/v8/proposal",
+    "POST /api/v8/review/scoped",
+    "POST /api/v8/commit/scoped",
+    "GET /api/v8/memories/detail"
+  ],
+  "requirements": {
+    "source": [
+      "scope",
+      "actor",
+      "kind",
+      "source_ref",
+      "body"
+    ],
+    "proposal": [
+      "scope",
+      "slot",
+      "kind",
+      "payload",
+      "source_refs",
+      "reason",
+      "idempotency_key"
+    ],
+    "review": [
+      "scope",
+      "id",
+      "decision",
+      "reviewer"
+    ],
+    "commit": [
+      "scope",
+      "id"
+    ],
+    "readback": [
+      "scope",
+      "slot",
+      "id"
+    ]
+  },
+  "invariants": [
+    "S01/S02/S10 cannot be written as canonical proposals",
+    "proposal is not committed memory",
+    "approval is not commit",
+    "commit readback is not actual host injection",
+    "revoked sources are not recalled",
+    "private media and night records require independent authorization"
+  ],
+  "legacy_routes_return_410": [
+    "POST /api/v8/review",
+    "POST /api/v8/commit"
+  ],
+  "scope_binding": "EVERLIGHT_BOUND_SCOPE is single-tenant only, not user authentication"
+}

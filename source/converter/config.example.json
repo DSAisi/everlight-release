@@ -1,0 +1,80 @@
+{
+  "input": "./data/chat.jsonl",
+  "workDir": "./work",
+  "format": "auto",
+  "maxRecords": 100000,
+  "chunkSize": 80,
+  "maxChunkChars": 24000,
+  "contextOverlap": 5,
+  "calibrationRecords": 1000,
+  "concurrency": 8,
+  "maxConcurrency": 12,
+  "retries": 3,
+  "scope": "personal",
+  "fieldMap": {
+    "messageId": [
+      "message_id",
+      "messageId",
+      "id"
+    ],
+    "conversationId": [
+      "conversation_id",
+      "conversationId",
+      "chat_id",
+      "session_id"
+    ],
+    "actor": [
+      "actor",
+      "role",
+      "sender",
+      "name",
+      "author",
+      "speaker"
+    ],
+    "text": [
+      "content",
+      "text",
+      "body",
+      "message",
+      "statement",
+      "summary",
+      "memory",
+      "note",
+      "description"
+    ],
+    "happenedAt": [
+      "happened_at",
+      "created_at",
+      "timestamp",
+      "time",
+      "observed_at",
+      "recorded_at"
+    ]
+  },
+  "transport": {
+    "type": "openai-compatible",
+    "urlEnv": "EVERLIGHT_API_URL",
+    "apiKeyEnv": "EVERLIGHT_API_KEY",
+    "modelEnv": "EVERLIGHT_MODEL",
+    "timeoutMs": 120000,
+    "maxOutputTokens": 8192
+  },
+  "allowExternalProcessing": false,
+  "budget": {
+    "maxTokens": 10000000
+  },
+  "embedding": {
+    "type": "lexical",
+    "urlEnv": "EVERLIGHT_EMBEDDING_URL",
+    "apiKeyEnv": "EVERLIGHT_EMBEDDING_KEY",
+    "model": "text-embedding-v3",
+    "dimensions": 1024,
+    "batchSize": 10,
+    "maxInputBytes": 10000000
+  },
+  "judgment": {
+    "enabled": false,
+    "maxPairs": 1000
+  },
+  "strictCore": true
+}

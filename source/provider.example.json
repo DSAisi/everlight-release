@@ -1,0 +1,7 @@
+{
+  "port": 18792,
+  "upstream": "https://example.invalid/v1",
+  "models": ["replace-with-provider-model-id"],
+  "upstream_key": "replace-with-your-test-key",
+  "association_recall": false
+}

@@ -1,0 +1,7 @@
+/** Host-owned credential; the model supplies a decision, never a credential or scope. */
+export function createAiDecisionChannel({baseUrl,scope,token,hostToken,decisionToken,fetchImpl=fetch}){
+ if(!scope||[token,hostToken,decisionToken].some(x=>typeof x!=='string'||x.length<24)||new Set([token,hostToken,decisionToken]).size!==3)throw Error('independent credentials required');
+ const url=new URL(baseUrl);if(!['http:','https:'].includes(url.protocol)||url.username||url.password||url.search||url.hash)throw Error('invalid core URL');
+ const call=async(path,body)=>{const r=await fetchImpl(baseUrl.replace(/\/$/,'')+path,{method:body?'POST':'GET',redirect:'error',signal:AbortSignal.timeout(15000),headers:{authorization:'Bearer '+token,'x-everlight-host-token':hostToken,'x-everlight-decision-token':decisionToken,'content-type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});const data=await r.json();if(!r.ok)throw Error(data.error||'decision request failed');return data;};
+ return {page:(state='pending',offset=0)=>call('/api/v8/proposals/page?'+new URLSearchParams({scope,state,offset,limit:25})),status:id=>call('/api/v8/joint/status?'+new URLSearchParams({scope,id})),detail:id=>call('/api/v8/proposals/detail?'+new URLSearchParams({scope,id})),decide:({id,digest,decision,reason})=>{if(!id||!digest||!['approve','reject'].includes(decision)||typeof reason!=='string'||!reason.trim()||reason.length>2000)throw Error('explicit decision required');return call('/api/v8/joint/ai',{scope,id,digest,decision,reason,auto_commit:true});}};
+}

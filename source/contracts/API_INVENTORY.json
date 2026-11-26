@@ -1,0 +1,975 @@
+{
+  "version": "RC5-isolated-workflow-evidence",
+  "release_status": "isolated-not-production",
+  "production_approved": false,
+  "canonical_base": "/api/v8",
+  "core_endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/v8/guidance",
+      "domain": "guidance",
+      "actor": "ai_or_host",
+      "effect": "Advice only; no candidate created.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/proposal/validate",
+      "domain": "validation",
+      "actor": "ai_or_host",
+      "effect": "Validate minimum shape; does not persist.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/host/hooks",
+      "domain": "integration",
+      "actor": "host",
+      "effect": "Required integration hook names, not evidence they are connected.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/source",
+      "domain": "source",
+      "actor": "host",
+      "effect": "Record original source before proposal; returns source identifier; does not imply verified authenticity.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/shared/actions",
+      "domain": "shared_action",
+      "actor": "human_or_host",
+      "effect": "Create/list shared reminders; queue is not AI delivery.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/shared/actions",
+      "domain": "shared_action",
+      "actor": "human_or_host",
+      "effect": "Create/list shared reminders; queue is not AI delivery.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/shared/ack",
+      "domain": "shared_action",
+      "actor": "trusted_host",
+      "effect": "Host acknowledges queue item; not model delivery.",
+      "auth": "core bearer + host token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/shared/delivery",
+      "domain": "shared_action",
+      "actor": "trusted_host",
+      "effect": "Host-provided request readback; not independent attestation.",
+      "auth": "core bearer + host token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/shared/resolve",
+      "domain": "shared_action",
+      "actor": "trusted_host",
+      "effect": "Record AI response with source; does not verify claimed task completion.",
+      "auth": "core bearer + host token"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/shared/results",
+      "domain": "shared_action",
+      "actor": "human_or_ai",
+      "effect": "Read shared reminder results.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/write/events",
+      "domain": "write_inbox",
+      "actor": "trusted_host",
+      "effect": "Ingest event; ready/held is not a memory.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/write/inbox",
+      "domain": "write_inbox",
+      "actor": "host",
+      "effect": "Read queued write events.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/write/process",
+      "domain": "write_inbox",
+      "actor": "host",
+      "effect": "Convert ready event into candidate, not committed memory.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/proposal",
+      "domain": "candidate",
+      "actor": "ai_or_host",
+      "effect": "Candidate only; source_refs, idempotency_key, reason and slot payload required.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/review",
+      "domain": "review",
+      "actor": "human_or_authorized_reviewer",
+      "effect": "Deprecated endpoint returns HTTP 410; use scoped trusted endpoint.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/commit",
+      "domain": "commit",
+      "actor": "authorized_writer",
+      "effect": "Deprecated endpoint returns HTTP 410; use scoped trusted endpoint.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/revoke",
+      "domain": "revocation",
+      "actor": "authorized_writer",
+      "effect": "Revoke with reason; propagate to derived views and caches separately.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/recall",
+      "domain": "retrieval",
+      "actor": "host",
+      "effect": "Retrieve candidates; trusted host may provide retrieval_hint:auto or skip_remote_vector to decline the optional built-in remote lane; mandatory recall retained. Optional raw_evidence:true is independently authorized; no proof of injection. Optional association_parent links a verified same-scope first recall and excludes its already selected candidates from ranking (temporal peers may repeat).",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/s01/search",
+      "domain": "source_evidence",
+      "actor": "trusted_host",
+      "effect": "Search consented normal actual S01 text, bounded excerpts only.",
+      "auth": "core bearer + trusted host + explicit bound scope opt-in"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/s01/expand",
+      "domain": "source_evidence",
+      "actor": "trusted_host",
+      "effect": "Exact source ID/hash, bounded text slice, recheck revocation.",
+      "auth": "core bearer + trusted host + explicit bound scope opt-in"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/recall/readback",
+      "domain": "retrieval",
+      "actor": "trusted_host",
+      "effect": "Compare provided request messages; not independent proof of model delivery. Optional memory_message_index=1 for associated run, requires parent verified for identical full messages hash.",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/dream/start",
+      "domain": "dream",
+      "actor": "authorized_writer",
+      "effect": "Start durable dream cycle; not a committed memory.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/dream/advance",
+      "domain": "dream",
+      "actor": "authorized_writer",
+      "effect": "Advance one stage; review before committing proposals.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/crsi/propose",
+      "domain": "crsi",
+      "actor": "authorized_writer",
+      "effect": "Propose isolated retrieval strategy.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/crsi/evaluate",
+      "domain": "crsi",
+      "actor": "authorized_writer",
+      "effect": "Evaluate strategy; does not auto-apply.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/tasks/event",
+      "domain": "tasks",
+      "actor": "trusted_host",
+      "effect": "Append sourced task event; verify requires current revision delivery evidence ID, distinct human/host acceptance source and checked steps. No external delivery proof.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/tasks/reporting",
+      "domain": "tasks",
+      "actor": "authorized_writer",
+      "effect": "Configure/read task reminder schedule.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/tasks/reporting",
+      "domain": "tasks",
+      "actor": "authorized_writer",
+      "effect": "Configure/read task reminder schedule.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/tasks/reporting/tick",
+      "domain": "tasks",
+      "actor": "scheduler",
+      "effect": "Enqueue due reminders; not proof AI received.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/tasks/board",
+      "domain": "tasks",
+      "actor": "human_or_ai",
+      "effect": "Read task projection; completed vs verified distinct.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/shared/view",
+      "domain": "dashboard",
+      "actor": "human_or_ai",
+      "effect": "Read canonical shared projection, not private vault ciphertext.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/status",
+      "domain": "dashboard",
+      "actor": "human_or_ai",
+      "effect": "Read slot counts and pending state.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/memories",
+      "domain": "memory",
+      "actor": "human_or_ai",
+      "effect": "Read canonical committed memory; history opt-in.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/host/capture-and-route",
+      "domain": "host_integration",
+      "actor": "trusted_host",
+      "effect": "Persist source and event, automatically create reviewable proposal; never silently commit",
+      "auth": "core bearer + host token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/write/drain",
+      "domain": "write_automation",
+      "actor": "trusted_host",
+      "effect": "Recover ready events and propose; no commit",
+      "auth": "core bearer + host token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/media/summary",
+      "domain": "media",
+      "actor": "trusted_host",
+      "effect": "Create S12 media candidate from host-attested vision consumption; review and commit required.",
+      "auth": "core bearer + x-everlight-host-token"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/health/chains",
+      "purpose": "Read observed chain failures and stalled actions"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/health/notify",
+      "purpose": "Queue deduplicated AI inspection reminders; trusted host only"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/relations/person",
+      "domain": "relations",
+      "actor": "ai_or_human",
+      "effect": "Create person node; does not merge any channel identity",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/relations/alias/propose",
+      "domain": "relations",
+      "actor": "ai_or_host",
+      "effect": "Suggest channel alias mapping; pending review, no merge",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/relations/alias/review",
+      "domain": "relations",
+      "actor": "human",
+      "effect": "Approve/reject identity mapping with active source",
+      "auth": "core bearer, trusted host token, independent human decision token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/relations/resolve",
+      "domain": "relations",
+      "actor": "ai_or_host",
+      "effect": "Resolve confirmed channel ID to canonical person ID",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/relations/graph",
+      "domain": "relations",
+      "actor": "ai_or_human",
+      "effect": "Current S07 projection across all active rows; resolved endpoints are stable IDs; unknown endpoints null",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/relations/trigger-recall",
+      "domain": "relations",
+      "actor": "trusted_host",
+      "effect": "Triggered person memory selection on confirmed incoming contact or explicit mention; does not send model request",
+      "auth": "core bearer and trusted host token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/relations/work-contact",
+      "domain": "relations",
+      "actor": "trusted_host",
+      "effect": "Capture authorized work contact source and select client/project candidates only; no model injection or formal memory commit",
+      "auth": "core bearer and trusted host token; bound scope required"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/memories/page",
+      "domain": "memory-read",
+      "actor": "authorized_reader",
+      "effect": "Read-only cursor pagination; excludes revoked sources; no injection or writes.",
+      "auth": "core bearer",
+      "query": {
+        "scope": "scope string (default personal)",
+        "slot": "S01..S12 optional",
+        "limit": "1..100 (default 50)",
+        "cursor": "opaque next_cursor returned by previous page",
+        "history": "1 to include superseded revisions"
+      },
+      "response": {
+        "rows": "canonical memory records",
+        "next_cursor": "string or null",
+        "has_more": "boolean"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/memories/detail",
+      "domain": "memory",
+      "actor": "authorized_reader",
+      "effect": "Read one source-valid scoped canonical memory with revision history; no write",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ledgers/page",
+      "domain": "system-ledgers",
+      "actor": "authorized-reader",
+      "effect": "Read-only cursor pagination for S01 sources, S02 receipts and S10 recall runs; no mutation or injection proof.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ledgers/detail",
+      "domain": "system-ledgers",
+      "actor": "authorized-reader",
+      "effect": "Exact scoped read-only S01/S02/S10 record lookup; revoked S01 excluded; no injection proof",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ui/person-memories",
+      "domain": "relations",
+      "actor": "authenticated_ui_gateway",
+      "effect": "Read-only committed person ID matched memory summaries; excludes sensitive and system slots; no recall",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/proposals/page",
+      "domain": "review-read",
+      "actor": "authorized_reader",
+      "effect": "Read-only proposal page; no approval or commit",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/proposals/detail",
+      "domain": "review-read",
+      "actor": "authorized_reader",
+      "effect": "Read-only proposal detail; no approval or commit",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/review/scoped",
+      "domain": "review_commit",
+      "actor": "trusted_host",
+      "effect": "Trusted scoped review; approved_pending_commit is not a canonical write",
+      "auth": "core bearer + trusted host token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/commit/scoped",
+      "domain": "review_commit",
+      "actor": "trusted_host",
+      "effect": "Trusted scoped commit with canonical database readback; not host injection",
+      "auth": "core bearer + trusted host token"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/joint/status",
+      "description": "共同决定状态或独立角色决定"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/joint/ai",
+      "description": "共同决定状态或独立角色决定"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/joint/human",
+      "description": "共同决定状态或独立角色决定"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/governance",
+      "description": "Read scope governance policy"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/governance",
+      "description": "Independent administrator credential; expected_epoch required"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/commit/recover",
+      "domain": "governance",
+      "actor": "trusted_host",
+      "effect": "Recover currently approved pending candidates; no new votes; paginated.",
+      "auth": "core bearer + host token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/review/reminders",
+      "domain": "review",
+      "actor": "host",
+      "effect": "Queue scoped deduplicated review requests; no vote or delivery",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/write/classify",
+      "domain": "write",
+      "actor": "host",
+      "effect": "Persist literal classification of held conversation event; create review candidate only.",
+      "auth": "core bearer + host token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/write/classification-page",
+      "domain": "write",
+      "actor": "host",
+      "effect": "Scoped eligible source page and persisted recovery results; no canonical write.",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/vector/page",
+      "domain": "vector",
+      "actor": "host",
+      "effect": "Derived index synchronization only",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/vector/ack",
+      "domain": "vector",
+      "actor": "host",
+      "effect": "Derived index synchronization only",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/dream/resume",
+      "domain": "dream",
+      "actor": "trusted_host",
+      "effect": "Defer unresolved conflicts without changing canonical memory and resume cycle.",
+      "auth": "core bearer + host token"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ui/records",
+      "domain": "dashboard",
+      "actor": "ui_or_host",
+      "effect": "Read-only recent and literal search, current canonical and ledger rows, bound scope; q or recent=1, slot, limit, offset; excludes revoked sources and private vault.",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ui/annotations",
+      "domain": "dashboard",
+      "actor": "human_dashboard",
+      "effect": "Scoped paged annotation history",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/ui/annotations",
+      "domain": "dashboard",
+      "actor": "human_dashboard",
+      "effect": "Append versioned human note; no canonical mutation",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/ui/fact-revision",
+      "domain": "dashboard",
+      "actor": "human_dashboard",
+      "effect": "S05 correction candidate with new human source",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ui/module",
+      "domain": "dashboard",
+      "actor": "human_or_ai",
+      "effect": "Scoped read-only evidence projection; vitals only with independent token",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ui/tasks",
+      "domain": "dashboard",
+      "actor": "human_or_ai",
+      "effect": "Scoped read-only evidence projection; no writes",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ui/dreams",
+      "domain": "dashboard",
+      "actor": "human_or_ai",
+      "effect": "Scoped read-only evidence projection; no writes",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/ui/observations",
+      "domain": "dashboard",
+      "actor": "human_dashboard_or_trusted_host",
+      "effect": "Create or withdraw scoped observations, not canonical memory; vitals require separate token and explicit consent",
+      "auth": "core bearer + trusted host; vitals independent token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/tasks/evidence",
+      "domain": "tasks",
+      "actor": "human_or_host",
+      "effect": "Record sourced step, independent verification or delivery claim; not proof of delivery.",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/dream/candidate-decision",
+      "domain": "dream",
+      "actor": "trusted_host",
+      "effect": "Persist defer/reject/propose decision; propose requires a selected human source_id and atomically creates pending S05 proposal. No canonical memory change.",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ui/source-memories",
+      "domain": "dashboard",
+      "actor": "ui_or_host",
+      "effect": "Read paginated current canonical references to visible S01, bound scope, id, limit, offset",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ui/identity",
+      "domain": "dashboard",
+      "actor": "ui_or_host",
+      "effect": "Read explicit unambiguous canonical identity name; optional subject, no inferred name",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/write/templates",
+      "domain": "validation",
+      "actor": "ai_or_host",
+      "effect": "D7 full templates; no data mutation",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/write/templated-proposal",
+      "domain": "validation",
+      "actor": "host",
+      "effect": "Strict template and source validation; pending candidate only",
+      "auth": "core bearer and trusted host token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/write/reminders/tick",
+      "domain": "validation",
+      "actor": "host",
+      "effect": "Queue scoped missing-field reminders only; no fabricated write",
+      "auth": "core bearer and trusted host token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/relations/name/propose",
+      "domain": "relations",
+      "actor": "trusted_host",
+      "effect": "Propose nickname, historical name or speaker-scoped address; pending only",
+      "auth": "core bearer and trusted host token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/relations/name/review",
+      "domain": "relations",
+      "actor": "human",
+      "effect": "Approve, reject or retire name; active source required for approval",
+      "auth": "core bearer, trusted host token, independent human decision token"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/write/contracts",
+      "domain": "write",
+      "actor": "host_or_ai",
+      "effect": "Machine readable D9 templates, system and module contracts",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/write/strict-proposal",
+      "domain": "write",
+      "actor": "trusted_host",
+      "effect": "D9 strict classification and candidate only, review and commit required",
+      "auth": "core bearer + host token"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/write/easy-capabilities",
+      "domain": "write",
+      "actor": "trusted_host",
+      "effect": "Capability discovery; lightweight model tool schema",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/write/easy-status",
+      "domain": "write",
+      "actor": "trusted_host",
+      "effect": "Bound scope; most recent intent outcomes, no content",
+      "auth": "core bearer"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/write/easy",
+      "domain": "write",
+      "actor": "trusted_host",
+      "effect": "Compile source-grounded candidate or hold; no auto approval/commit",
+      "auth": "core bearer + host token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/host/tool-evidence",
+      "domain": "tool_lifecycle",
+      "actor": "host",
+      "effect": "Scoped result metadata and explicit task revision link; no task verification.",
+      "auth": "bound scope, core bearer, shared host and dedicated E4 token"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/host/tool-evidence",
+      "domain": "tool_lifecycle",
+      "actor": "host",
+      "effect": "Scoped result metadata and explicit task revision link; no task verification.",
+      "auth": "bound scope, core bearer, shared host and dedicated E4 token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/host/tool-event",
+      "domain": "tool_lifecycle",
+      "actor": "host",
+      "effect": "Persist actual tool lifecycle metadata to S01/S02; no canonical memory change.",
+      "auth": "bound scope, core bearer, shared host and dedicated E4 token"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/host/tool-status",
+      "domain": "tool_lifecycle",
+      "actor": "host",
+      "effect": "Read scoped lifecycle evidence; no task verification.",
+      "auth": "bound scope, core bearer, shared host and dedicated E4 token"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/host/activity-event",
+      "domain": "activity",
+      "actor": "host",
+      "effect": "Observed metadata only; no task completion",
+      "auth": "bound scope, core bearer, shared host and dedicated E4 token"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ui/activities",
+      "domain": "activity",
+      "actor": "human",
+      "effect": "Read-only activity feed; no raw data",
+      "auth": "bound scope, core bearer, explicit UI opt-in"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/host/memory-observation",
+      "domain": "memory",
+      "actor": "trusted_host",
+      "effect": "E5B evidence and candidate only; existing governance; no canonical commit.",
+      "auth": "core bearer + host + E4 dedicated token + E5B opt-in"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/host/engine-event",
+      "domain": "engine_capture",
+      "actor": "trusted_host",
+      "effect": "Atomic S01/S02 engine audit metadata; no canonical write or task verification.",
+      "auth": "core bearer + host token + dedicated E4 tool token; bound scope and E5C opt-in"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ui/quality",
+      "domain": "quality-audit",
+      "actor": "authenticated_ui_gateway",
+      "effect": "Scoped read-only quality issues and review counts; not semantic completeness or model delivery proof",
+      "auth": "core bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ui/mainline",
+      "domain": "panel",
+      "actor": "authorized_panel_server",
+      "effect": "Read notification quality counts or configured cognitive-state projection; no mutation",
+      "auth": "core bearer; bound scope"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ui/live-revision",
+      "domain": "panel",
+      "actor": "authorized_panel_server",
+      "effect": "Scoped opaque revision for committed changes; no data or model invocation",
+      "auth": "core bearer; bound scope"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/recall/transport",
+      "domain": "retrieval",
+      "actor": "trusted_host",
+      "effect": "Persist observed gateway HTTP response matched to verified snapshot; not provider-independent proof.",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/dream/opportunity",
+      "domain": "dream",
+      "actor": "trusted_host",
+      "effect": "Optional idle invitation; no model delivery claim.",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/dream/improvement",
+      "domain": "dream",
+      "actor": "trusted_host",
+      "effect": "Evidence-bound pending S11 reflection; no automatic canonical change.",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/dream/invite",
+      "domain": "dream",
+      "actor": "human_via_host",
+      "effect": "Deduplicated durable invitation; no model delivery inferred.",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/dream/invitations",
+      "domain": "dream",
+      "actor": "host_or_panel",
+      "effect": "Recent invitation status and request readback; no message body.",
+      "auth": "core bearer, bound scope"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/dream/revision",
+      "domain": "dream",
+      "actor": "ai_via_host",
+      "effect": "Revision proposal from frozen evidence; existing independent review and commit required.",
+      "auth": "core bearer + trusted host"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/dream/replay",
+      "domain": "dream",
+      "actor": "trusted_host",
+      "effect": "Compare persisted same-query before/after recall selections for committed revision; not behavioral learning.",
+      "auth": "core bearer + trusted host"
+    }
+  ],
+  "dashboard_route_literals": {
+    "server.mjs": [
+      "/audit",
+      "/dreams",
+      "/dreams/request",
+      "/dreams/reviews",
+      "/evidence",
+      "/health",
+      "/host/",
+      "/host/dreams/request",
+      "/host/evidence",
+      "/host/media/",
+      "/host/night/",
+      "/host/receipts",
+      "/host/task-sync",
+      "/media/",
+      "/overview",
+      "/settings/theme",
+      "/status",
+      "/tasks",
+      "/tasks/export",
+      "/vault/"
+    ],
+    "media-api.mjs": [
+      "/host/media/",
+      "/host/media/annotate",
+      "/host/media/capture",
+      "/host/media/completed",
+      "/media/activity",
+      "/media/albums",
+      "/media/items",
+      "/media/settings",
+      "/media/summary",
+      "/media/upload"
+    ],
+    "vault-api.mjs": [
+      "/host/night/capture",
+      "/host/night/reminder",
+      "/vault/auto",
+      "/vault/entries",
+      "/vault/reset",
+      "/vault/setup",
+      "/vault/status"
+    ]
+  },
+  "limitations": [
+    "UI routes use separate /ui/api/v1 gateway and cannot be inferred to be v8 core routes",
+    "Dashboard dynamic routes and methods require host integration verification",
+    "S01/S02/S10 system ledger only",
+    "Minimum payload validator is not recovered v1.4 complete machine template",
+    "Night vault exists in v7 dashboard but is not integrated with v8 canonical store",
+    "Photo receipt authenticity remains host-dependent",
+    "Cross-host end-to-end injection not verified"
+  ],
+  "dashboard_endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/v8/review/batch",
+      "auth": "UI authentication; server-side human token; review writes enabled",
+      "effect": "1–25 unique candidates; independent version-bound decisions; partial results; fixed scope"
+    },
+    {
+      "method": "GET",
+      "path": "/api/recent",
+      "auth": "UI authentication; server-side bound scope",
+      "effect": "Recent visible records across canonical and system ledgers"
+    },
+    {
+      "method": "GET",
+      "path": "/api/search",
+      "auth": "UI authentication; server-side bound scope",
+      "effect": "Literal keyword search with slot and offset; no recall side effect"
+    },
+    {
+      "method": "GET",
+      "path": "/api/modules",
+      "auth": "UI authentication; server-side bound scope",
+      "effect": "Explicit module mapping availability"
+    },
+    {
+      "method": "GET",
+      "path": "/api/module",
+      "auth": "UI authentication; server-side bound scope",
+      "effect": "Explicit module-specific unavailable state when not mapped"
+    },
+    {
+      "method": "GET",
+      "path": "/api/annotations/history",
+      "effect": "Scoped annotation history",
+      "auth": "UI session"
+    },
+    {
+      "method": "POST",
+      "path": "/api/annotation",
+      "effect": "Versioned note",
+      "auth": "UI session + server review write enablement"
+    },
+    {
+      "method": "POST",
+      "path": "/api/fact/revise",
+      "effect": "S05 correction candidate",
+      "auth": "UI session + server review write enablement"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/ui/workflow",
+      "effect": "Create S03 candidate, register evidence-backed human progress/block/reopen event, configure reporting, start/advance/resume core dream; no direct canonical commit",
+      "auth": "UI session + scope-bound server-side trusted write credentials"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v8/ui/observations",
+      "auth": "UI session + trusted host proxy + writes enabled; vitals separately configured",
+      "effect": "Scoped observation create/withdraw with readback"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ui/live-revision",
+      "auth": "UI authentication; bound scope; core workflow mode",
+      "effect": "Opaque revision through unified API; read only"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v8/ui/dream-invitations",
+      "auth": "UI authentication; bound scope; core workflow mode",
+      "effect": "Read invitation state via unified panel gateway; host acknowledgement and model request readback are not execution proof."
+    }
+  ]
+}

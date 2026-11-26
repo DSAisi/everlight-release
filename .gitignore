@@ -1,0 +1,20 @@
+# Runtime and local secrets are never repository content.
+**/trial-beta/
+**/trial-data/
+**/private-data/
+**/node_modules/
+**/imports/
+**/backups/
+**/*.everlight-backups/
+**/*.sqlite*
+**/*.db
+**/*.db-wal
+**/*.db-shm
+**/*.env
+**/.env*
+**/*.local.json
+**/*.pem
+**/*.key
+**/__pycache__/
+/dist/
+/release-assets/

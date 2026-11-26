@@ -1,0 +1,9 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {assessWriteOpportunity,buildProposal,reminderForTurn} from '../automation/write-coordinator.mjs';
+const e={scope:'demo:a',event_id:'e1',source_id:'s1',signal:'explicit_preference',payload:{statement:'浅色',subject:'human',attribution:'direct_statement'}};
+test('valid host event produces review-only proposal',()=>{const d=assessWriteOpportunity(e);assert.equal(d.action,'suggest_proposal');assert.equal(d.auto_commit,false);const p=buildProposal(e);assert.equal(p.slot,'S05');assert.deepEqual(p.source_refs,['s1']);assert.equal(p.idempotency_key,buildProposal(e).idempotency_key)});
+test('no source no candidate',()=>assert.equal(assessWriteOpportunity({...e,source_id:''}).action,'hold'));
+test('sensitive content is opt-in',()=>{assert.equal(assessWriteOpportunity({...e,sensitive:true}).action,'hold');assert.equal(assessWriteOpportunity({...e,sensitive:true,consent:{authorized:true}}).action,'suggest_proposal')});
+test('photo cannot be archived from upload alone',()=>{const p={...e,signal:'consumed_media',payload:{path:'asset:1',version:'1',media_type:'image/png'}};assert.equal(assessWriteOpportunity(p).action,'hold');assert.equal(assessWriteOpportunity({...p,evidence:{media_consumed:true,model_request_id:'req1'}}).action,'suggest_proposal')});
+test('task requires accepted receipt',()=>{const t={...e,signal:'accepted_task',payload:{summary:'fix',owner:'ai',intent:'repair',state:'accepted'}};assert.equal(assessWriteOpportunity(t).action,'hold');assert.equal(assessWriteOpportunity({...t,evidence:{accepted:true}}).action,'suggest_proposal')});
+test('reminder does not imply writes or deliveries',()=>{const r=reminderForTurn({scope:'demo:a',events:[e]});assert.equal(r.pending.length,1);assert.equal(r.never_infer_delivery,true);assert.match(r.reminder,/等待审核/)})

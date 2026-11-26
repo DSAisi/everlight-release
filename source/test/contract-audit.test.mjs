@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {SLOT_RULES} from '../protocol/portable-v1.mjs';
+const inventory=JSON.parse(readFileSync(new URL('../contracts/API_INVENTORY.json',import.meta.url)));
+const playbook=JSON.parse(readFileSync(new URL('../contracts/AI_WRITE_PLAYBOOK.json',import.meta.url)));
+const server=readFileSync(new URL('../core/server.mjs',import.meta.url),'utf8');
+test('all core routes have documented method and unique path',()=>{const routes=[...server.matchAll(/'((?:GET|POST) \/api\/v8\/[^']+)':/g)].map(m=>m[1]);const documented=inventory.core_endpoints.map(x=>x.method+' '+x.path);assert.equal(new Set(routes).size,routes.length);assert.deepEqual(routes.filter(x=>!x.endsWith('/contract')&&!x.endsWith('/write/playbook')).sort(),documented.sort());});
+test('every slot is in machine-readable playbook with exact kinds',()=>{assert.deepEqual(Object.keys(playbook.slots).sort(),Object.keys(SLOT_RULES).sort());for(const [slot,r] of Object.entries(SLOT_RULES)){assert.deepEqual(playbook.slots[slot].kinds,r.kind);assert.equal(playbook.slots[slot].canonical_write,r.write==='proposal_review_commit');}});
+test('critical anti-fabrication and privacy invariants remain enabled',()=>{assert.equal(inventory.production_approved,false);assert.ok(Object.values(playbook.rules).every(Boolean));assert.equal(playbook.slots.S01.canonical_write,false);assert.equal(playbook.slots.S02.canonical_write,false);assert.equal(playbook.slots.S10.canonical_write,false);});
